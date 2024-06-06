@@ -12,9 +12,9 @@ exports.substore = async (req, res) => {
             data.image = req.file.path;
         }
         await data.save();
-        res.status(201).json({ status: "OK", message: "Subcategory created successfully" });
+        res.status(201).json({ status: "OK", message: "Subcategory created successfully", error: "0" });
     } catch (e) {
-        res.status(500).json({ status: "Failed", message: e.message });
+        res.status(500).json({ status: "Failed", message: e.message, error: "1" });
     }
 };
 
@@ -39,6 +39,28 @@ exports.deletesubcat = async (req, res) => {
     }
 }
 
+
+exports.updateSubCategory = async (req, res) => {
+    try {
+        const categoryId = req.params.id; // Assuming category ID is passed in the request parameters
+        const updateData = req.body; // Assuming the update data is sent in the request body
+
+        if (req.file) {
+            updateData.image = req.file.path;
+        }
+
+        const updatedCategory = await SubCategoryModal.findByIdAndUpdate(categoryId, updateData, { new: true });
+
+        if (!updatedCategory) {
+            return res.status(404).json({ error: "Subcategory not found" });
+        }
+
+        res.status(200).send({ "status": "OK", "message": "Data Updated Successfully", error: 0 })
+    } catch (error) {
+        console.error("Error updating category:", error);
+        res.status(500).json({ error: "Internal server error", error: 1 });
+    }
+};
 
 
 
