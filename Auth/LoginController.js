@@ -13,11 +13,11 @@ exports.LoginController = async (req, res) => {
         // Check if the user exists
         const user = await Register.findOne({ email });
         if (!user) {
-            return res.status(403).json({ message: "Invalid email", details: [{ field: "email", message: "Invalid email" }], error: 1 });
+            return res.status(201).json({ message: "Invalid email", details: [{ field: "email", message: "Invalid email" }], error: 1 });
         }
-        
+
         if (user.password !== password) {
-            return res.status(403).json({ message: "Invalid password", details: [{ field: "password", message: "Invalid password" }], error: 1 });
+            return res.status(201).json({ message: "Invalid password", details: [{ field: "password", message: "Invalid password" }], error: 1 });
         }
 
         // User authenticated, generate JWT token
@@ -27,7 +27,7 @@ exports.LoginController = async (req, res) => {
                 return res.status(500).json({ error: "Error in generating token", details: [{ field: "token", message: "Error in generating token" }], error: 1 });
             }
             // Send the token in the response
-            res.status(200).json({ error: 0, message: "You are successfully logged in", _id: user._id, token, type: user.type });
+            res.status(200).json({ error: 0, message: "You are successfully logged in", _id: user._id, token, type: user.type, status: user.status });
         });
 
     } catch (error) {
@@ -70,6 +70,7 @@ exports.adminAuth = (req, res, next) => {
     }
     next();
 };
+
 
 
 

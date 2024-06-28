@@ -17,9 +17,11 @@ const RegisterSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ['pending', 'cancelled', 'accepted']
-    }
+    },
+    events: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }],
+    description: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Description' }]
 }, {
-    timestamps: true 
+    timestamps: true
 });
 
 module.exports = mongoose.model('Register', RegisterSchema);

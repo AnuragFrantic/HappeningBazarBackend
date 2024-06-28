@@ -182,7 +182,7 @@ exports.getProfile = async (req, res) => {
 exports.getbyUser = async (req, res) => {
     try {
         const { type } = req.query; // Extract the type from req.query
-        const data = await Register.find({ type: type, status: "accepted" });
+        const data = await Register.find({ type: type, status: "accepted" })
 
         // Respond with the fetched data
         res.status(200).json({ data });

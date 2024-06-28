@@ -1,42 +1,37 @@
 const DescriptionModal = require("../model/Description")
-
-
-
-
-
-// exports.createdescription = async (req, res) => {
-//     try {
-//         const data = req.body;
-//         const images = req.files.map(file => ({ img: file.path }));
-
-//         const newDescription = new DescriptionModal({
-//             store_name: data.store_name,
-//             image: images,
-//             detail: data.detail,
-//             short_detail: data.short_detail
-//         });
-
-//         await newDescription.save();
-
-//         res.status(200).send({ "status": "OK", "message": "Description Created Successfully", error: 0, data: newDescription });
-//     } catch (e) {
-//         res.status(500).send({ "status": "Failed", "message": e.message, error: "1" });
-//     }
-// }
+const UserModal = require('../model/Register')
 
 exports.createdescription = async (req, res) => {
     try {
-        const images = req.files.map(file => ({ img: file.path }));
 
-        const newDescription = new DescriptionModal({
-            ...req.body, // Pass all fields from req.body
-            image: images
-        });
-        console.log(newDescription)
+        const user = await UserModal.findById({ "_id": req.body.created_by });
 
-        await newDescription.save();
+        if (user.status == "cancelled" || user.status == "pending") {
+            res.status(200).send({ "status": "Failed", "message": `Your application is ${user.status}, which is why you cannot upload products.`, error: "1" });
+        } else {
+            const images = req.files.map(file => ({ img: file.path }));
 
-        res.status(200).send({ "status": "OK", "message": "Description Created Successfully", error: 0, data: newDescription });
+            const newDescription = new DescriptionModal({
+                ...req.body, 
+                image: images
+            });
+            console.log(newDescription)
+
+            await newDescription.save();
+
+
+            // Find the user associated with the event
+            // Assuming userId is set in the request
+
+            // Update the user's events array
+            user.description.push(newDescription._id); // Assuming user.events is an array of event IDs
+            await user.save();
+            res.status(200).send({ "status": "OK", "message": "Description Created Successfully", error: 0, data: newDescription });
+        }
+
+
+
+
     } catch (e) {
         res.status(500).send({ "status": "Failed", "message": e.message, error: "1" });
     }
@@ -77,7 +72,7 @@ exports.deletedesc = async (req, res) => {
 
 exports.updatedescription = async (req, res) => {
     try {
-        const { id } = req.params; // Extract the description ID from the request parameters
+        const { id } = req.params;
         const data = req.body;
         const images = req.files.map(file => ({ img: file.path }));
 
@@ -144,9 +139,9 @@ exports.deleteImage = async (req, res) => {
         }
 
         // Image successfully deleted
-        res.status(200).json({ message: "Image deleted successfully", data: description });
+        res.status(200).json({ message: "Image deleted successfully", data: description, error: 0 });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message, error: 1 });
     }
 };
 
@@ -168,9 +163,9 @@ exports.clearAllImages = async (req, res) => {
         }
 
         // All images successfully deleted
-        res.status(200).json({ message: "All images deleted successfully", data: description });
+        res.status(200).json({ message: "All images deleted successfully", data: description, error: 0 });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message, error: 1 });
     }
 };
 
