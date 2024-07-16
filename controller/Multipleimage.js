@@ -21,9 +21,9 @@ exports.createBanner = (req, res) => {
 exports.getBanners = async (req, res) => {
     try {
         const data = await Banner.find()
-        res.status(200).send({ "status": "OK", data: data })
+        res.status(200).send({ "status": "OK", data: data, error: 0 })
     } catch (e) {
-        res.status(500).send({ "status": "Failed", "message": e.message })
+        res.status(500).send({ "status": "Failed", "message": e.message, error: 1 })
     }
 }
 
@@ -34,11 +34,11 @@ exports.getBannerById = (req, res) => {
     Banner.findById(id)
         .then(banner => {
             if (!banner) {
-                return res.status(404).json({ message: 'Banner not found' });
+                return res.status(404).json({ message: 'Banner not found', error: 1 });
             }
-            res.status(200).json(banner);
+            res.status(200).send({ "status": "OK", data: banner, error: 0 })
         })
-        .catch(err => res.status(500).json({ message: err.message }));
+        .catch(err => res.status(500).json({ message: err.message, error: 1 }));
 };
 
 exports.updateBanner = (req, res) => {
@@ -49,7 +49,7 @@ exports.updateBanner = (req, res) => {
     Banner.findByIdAndUpdate(id, { position, image: images }, { new: true })
         .then(banner => {
             if (!banner) {
-                return res.status(404).json({ message: 'Banner not found' });
+                return res.status(404).json({ message: 'Banner not found', error: 1 });
             }
             res.status(200).send({ "status": "OK", "message": "Banner Updated Successfully", error: 0 })
         })
@@ -64,7 +64,7 @@ exports.deleteBanner = (req, res) => {
     Banner.findByIdAndDelete(id)
         .then(banner => {
             if (!banner) {
-                return res.status(404).json({ message: 'Banner not found' });
+                return res.status(404).json({ message: 'Banner not found', error: 1 });
             }
             res.status(200).send({ "status": "OK", "message": "Banner Deleted Successfully", error: 0 })
         })

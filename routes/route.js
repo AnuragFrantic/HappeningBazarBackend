@@ -6,7 +6,7 @@ const upload = require('../Config/Multerconfig');
 const { PostRegister, getallRegister, putRegister, deleteRegister, getProfile, getbyUser } = require("../Auth/RegisterController");
 const { verifyToken, LoginController, adminAuth, usercheckstatus } = require("../Auth/LoginController");
 const { postlocation, getlocation } = require("../controller/LocationController");
-const { createbanner, getallbanner, putbanner } = require("../controller/BannerController");
+
 const { createBanner, getBanners, updateBanner, deleteBanner } = require("../controller/Multipleimage");
 const { createdescription, getalldescription, deletedesc, updatedescription, deleteImage, clearAllImages, descriptionbyuser } = require("../controller/DescriptionController");
 const { createitem, getallitem, getuserProduct, deleteitem, updateitem } = require("../controller/ProductController");
