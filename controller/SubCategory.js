@@ -27,6 +27,22 @@ exports.getallsubcat = async (req, res) => {
     }
 }
 
+
+
+exports.getbycategory = async (req, res) => {
+    let catid = req.params.id;
+    try {
+        const data = await SubCategoryModal.find({ 'category': catid }).populate("category")
+        if (!data) {
+            return res.status(404).json({ status: "Failed", message: "Category not found", error: 1 });
+        }
+        res.status(200).json({ status: "Success", data, error: 0 });
+    } catch (err) {
+        res.status(500).json({ status: "Failed", message: err.message, error: 1 });
+    }
+};
+
+
 exports.deletesubcat = async (req, res) => {
     try {
         const data = await SubCategoryModal.findByIdAndDelete(req.params.id)

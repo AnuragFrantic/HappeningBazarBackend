@@ -8,7 +8,8 @@ const EventSchema = new mongoose.Schema({
     short_detail: { type: String },
     detail: { type: String },
     // time: { type: String },
-    created_by: { type: mongoose.Schema.Types.ObjectId, require: true }
+    created_by: { type: mongoose.Schema.Types.ObjectId, require: true },
+    store: { type: mongoose.Schema.Types.ObjectId, ref: "Store", required: true }
 }, {
     timestamps: true
 })

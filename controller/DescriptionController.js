@@ -1,57 +1,108 @@
 const DescriptionModal = require("../model/Description")
 const UserModal = require('../model/Register')
+const StoreModal = require("../model/CreateStore")
+
+// exports.createdescription = async (req, res) => {
+//     try {
+
+//         const user = await UserModal.findById({ "_id": req.body.created_by });
+//         const store = await StoreModal.findById({ "_id": req.body.store });
+//         if (user.status == "cancelled" || user.status == "pending") {
+//             res.status(200).send({ "status": "Failed", "message": `Your application is ${user.status}, which is why you cannot upload products.`, error: "1" });
+//         } else if (!store) {
+//             res.status(200).send({ "status": "Failed", "message": `Store Not Found`, error: "1" });
+//         } else {
+//             const images = req.files.map(file => ({ img: file.path }));
+
+//             const newDescription = new DescriptionModal({
+//                 ...req.body,
+//                 image: images
+//             });
+
+
+//             await newDescription.save();
+//             user.description.push(newDescription._id);
+//             store.description.push(newDescription._id)
+//             await user.save();
+//             await store.save();
+//             res.status(200).send({ "status": "OK", "message": "Description Created Successfully", error: 0, data: newDescription });
+//         }
+
+//     } catch (e) {
+//         res.status(500).send({ "status": "Failed", "message": e.message, error: "1" });
+//     }
+// }
 
 exports.createdescription = async (req, res) => {
     try {
+        const user = await UserModal.findById(req.body.created_by);
+        const store = await StoreModal.findById(req.body.store);
 
-        const user = await UserModal.findById({ "_id": req.body.created_by });
-
-        if (user.status == "cancelled" || user.status == "pending") {
-            res.status(200).send({ "status": "Failed", "message": `Your application is ${user.status}, which is why you cannot upload products.`, error: "1" });
-        } else {
-            const images = req.files.map(file => ({ img: file.path }));
-
-            const newDescription = new DescriptionModal({
-                ...req.body, 
-                image: images
-            });
-            console.log(newDescription)
-
-            await newDescription.save();
-
-
-            // Find the user associated with the event
-            // Assuming userId is set in the request
-
-            // Update the user's events array
-            user.description.push(newDescription._id); // Assuming user.events is an array of event IDs
-            await user.save();
-            res.status(200).send({ "status": "OK", "message": "Description Created Successfully", error: 0, data: newDescription });
+        if (!user) {
+            return res.status(400).send({ "status": "Failed", "message": "User not found", error: "1" });
         }
 
+        if (user.status === "cancelled" || user.status === "pending") {
+            return res.status(200).send({ "status": "Failed", "message": `Your application is ${user.status}, which is why you cannot upload products.`, error: "1" });
+        }
 
+        if (!store) {
+            return res.status(200).send({ "status": "Failed", "message": "Store not found", error: "1" });
+        }
 
+        // Check if the store already has an assigned description
+        const existingDescription = await DescriptionModal.findOne({ store: store });
+
+        if (existingDescription) {
+            return res.status(200).send({ "status": "Failed", "message": "This store already has an assigned description", error: "1" });
+        }
+
+        // Create new description
+        const images = req.files.map(file => ({ img: file.path }));
+
+        const newDescription = new DescriptionModal({
+            ...req.body,
+            image: images
+        });
+
+        await newDescription.save();
+        user.description.push(newDescription._id);
+        store.description.push(newDescription._id);
+        await user.save();
+        await store.save();
+
+        res.status(200).send({ "status": "OK", "message": "Description Created Successfully", error: 0, data: newDescription });
 
     } catch (e) {
         res.status(500).send({ "status": "Failed", "message": e.message, error: "1" });
     }
-}
+};
 
 
 
 
 exports.getalldescription = async (req, res) => {
     try {
-        const data = await DescriptionModal.find().populate({
-            path: "created_by",
-            select: "_id name"
+        const data = await DescriptionModal.find()
+            .populate({
+                path: "created_by store",
+                select: "_id name title url"
+            })
+            .sort({ createdAt: -1 });
+        res.status(200).send({
+            message: "Get Data Successfully",
+            error: 0,
+            data: data
         });
-
-        res.status(200).send({ "message": "Get Data Successfully", error: 0, data: data });
     } catch (e) {
-        res.status(500).send({ "status": "Failed", "message": e.message, error: "1" });
+        res.status(500).send({
+            status: "Failed",
+            message: e.message,
+            error: 1
+        });
     }
-}
+};
+
 
 
 
@@ -62,9 +113,9 @@ exports.deletedesc = async (req, res) => {
         if (!data) {
             return res.status(404).send({ "status": "Failed", "message": "Description not found" });
         }
-        res.status(200).send({ "status": "OK", "message": "Description deleted successfully", data: data });
+        res.status(200).send({ "status": "OK", "message": "Description deleted successfully", data: data, error: 0 });
     } catch (e) {
-        res.status(500).send({ "status": "Failed", "message": e.message });
+        res.status(500).send({ "status": "Failed", "message": e.message, error: 1 });
     }
 }
 
@@ -111,6 +162,43 @@ exports.updatedescription = async (req, res) => {
 
 
 
+exports.getdescriptionbyurl = async (req, res) => {
+    try {
+        const url = req.params.url;
+
+        const description = await DescriptionModal.aggregate([
+            {
+                $lookup: {
+                    from: 'stores', // the name of the collection for the 'store' reference
+                    localField: 'store',
+                    foreignField: '_id',
+                    as: 'storeDetails'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$storeDetails',
+                    preserveNullAndEmptyArrays: true // to include documents without storeDetails
+                }
+            },
+            {
+                $match: { "storeDetails.url": url }
+            }
+        ]);
+
+        if (description.length === 0) {
+            return res.status(404).json({ message: 'Description not found' });
+        }
+
+        res.status(200).json({
+            message: "Description fetched successfully",
+            data: description[0],
+            error: 0
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+};
 
 
 

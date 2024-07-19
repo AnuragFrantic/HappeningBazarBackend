@@ -18,7 +18,10 @@ exports.createitem = async (req, res) => {
 
 exports.getallitem = async (req, res) => {
     try {
-        const data = await ProductModal.find()
+        const data = await ProductModal.find().populate({
+            path: "store",
+            select: "title url"
+        })
         res.status(201).json({ status: "OK", message: "Product fecth successfully", error: "0", data: data });
     } catch (e) {
         res.status(500).json({ status: "OK", message: "Product Not Found", error: "1" });
@@ -42,7 +45,7 @@ exports.deleteitem = async (req, res) => {
 
 exports.updateitem = async (req, res) => {
     const { id } = req.params;
-    console.log(id);
+
 
     try {
         // Find the product by ID
@@ -79,3 +82,43 @@ exports.getuserProduct = async (req, res) => {
         res.status(500).json({ status: "OK", message: "Product Not Found", error: "1" })
     }
 }
+
+
+exports.getProductByUrl = async (req, res) => {
+    try {
+        const url = req.params.url;
+
+
+        const products = await ProductModal.aggregate([
+            {
+                $lookup: {
+                    from: 'stores',
+                    localField: 'store',
+                    foreignField: '_id',
+                    as: 'storeDetails'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$storeDetails',
+                    preserveNullAndEmptyArrays: true // to include documents without storeDetails
+                }
+            },
+            {
+                $match: { "storeDetails.url": url }
+            }
+        ]);
+
+        if (products.length === 0) {
+            return res.status(404).json({ message: 'No products found for the given URL' });
+        }
+
+        res.status(200).json({
+            message: "Product fetched successfully",
+            data: products,
+            error: 0
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+};

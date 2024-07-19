@@ -13,7 +13,8 @@ const OfferSchema = new mongoose.Schema({
             terms: { type: String }
         }
     ],
-    created_by: { type: mongoose.Schema.Types.ObjectId, require: true }
+    created_by: { type: mongoose.Schema.Types.ObjectId, require: true },
+    store: { type: mongoose.Schema.Types.ObjectId, ref: "Store", required: true }
 }, {
     timestamps: true
 });

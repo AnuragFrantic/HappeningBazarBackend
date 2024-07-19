@@ -4,6 +4,7 @@ const Offer = require('../model/OffersModal')
 exports.createoffer = async (req, res) => {
     try {
         const data = await Offer(req.body);
+        console.log(data)
         await data.save()
         res.status(201).json({ status: "OK", message: "Offer  created Successfully", error: "0" });
     } catch (e) {
@@ -58,6 +59,46 @@ exports.deleteoffer = async (req, res) => {
         res.status(500).json({ status: "OK", message: "Offer  not  found", error: "1" });
     }
 }
+
+
+
+exports.getOfferByUrl = async (req, res) => {
+    try {
+        const url = req.params.url;
+        const offerdata = await Offer.aggregate([
+            {
+                $lookup: {
+                    from: 'stores',
+                    localField: 'store',
+                    foreignField: '_id',
+                    as: 'storeDetails'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$storeDetails',
+                    preserveNullAndEmptyArrays: true // to include documents without storeDetails
+                }
+            },
+            {
+                $match: { "storeDetails.url": url }
+            }
+        ]);
+
+        if (offerdata.length === 0) {
+            return res.status(404).json({ message: 'No Offer found for the given URL' });
+        }
+
+        res.status(200).json({
+            message: "Product fetched successfully",
+            data: offerdata,
+            error: 0
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+};
+
 
 
 
