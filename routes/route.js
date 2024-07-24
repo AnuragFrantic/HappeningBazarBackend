@@ -14,7 +14,7 @@ const { createContact, getContact } = require("../controller/ContactController")
 const { reportraise, getAllreport, getuserreport } = require("../controller/ReportController");
 const { createoffer, getalloffer, putoffer, deleteoffer, getOfferByUrl } = require("../controller/OfferController");
 const { createEvent, getallevent, deleteevent, updateevent } = require("../controller/EventController");
-const { createStore, getAllStores, updateStore, deleteStore } = require("../controller/CreateController");
+const { createStore, getAllStores, updateStore, deleteStore, getvendorstore } = require("../controller/CreateController");
 
 
 const router = express.Router();
@@ -150,6 +150,9 @@ router.put('/events', upload.single("image"), updateevent)
 router.post("/store", upload.single("image"), createStore)
 router.get("/store", getAllStores)
 router.put("/store/:id", upload.single("image"), updateStore)
+
+router.get("/vendorstore/:id", getvendorstore)
+
 router.delete("/store", deleteStore)
 
 

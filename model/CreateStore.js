@@ -13,7 +13,9 @@ const StoreSchema = new mongoose.Schema({
         type: String,
         unique: true,
         required: true
-    }
+    },
+    created_by: { type: mongoose.Schema.Types.ObjectId, ref: "Register", required: true },
+
 }, {
     timestamps: true
 

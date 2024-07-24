@@ -39,6 +39,20 @@ exports.getStoreById = async (req, res) => {
     }
 };
 
+
+exports.getvendorstore = async (req, res) => {
+    let vendorid = req.params.id
+
+
+    try {
+        const store = await Store.find({ "created_by": vendorid }).populate("category")
+        res.status(200).json({ error: 0, data: store });
+
+    } catch (err) {
+        res.status(500).json({ error: 1, message: err.message });
+    }
+}
+
 // Update a store
 exports.updateStore = async (req, res) => {
     try {
