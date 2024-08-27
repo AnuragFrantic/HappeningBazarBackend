@@ -87,8 +87,6 @@ exports.getuserProduct = async (req, res) => {
 exports.getProductByUrl = async (req, res) => {
     try {
         const url = req.params.url;
-
-
         const products = await ProductModal.aggregate([
             {
                 $lookup: {
@@ -122,3 +120,7 @@ exports.getProductByUrl = async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+
+
+
+

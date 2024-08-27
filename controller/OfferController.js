@@ -4,7 +4,7 @@ const Offer = require('../model/OffersModal')
 exports.createoffer = async (req, res) => {
     try {
         const data = await Offer(req.body);
-        console.log(data)
+
         await data.save()
         res.status(201).json({ status: "OK", message: "Offer  created Successfully", error: "0" });
     } catch (e) {
@@ -51,12 +51,22 @@ exports.putoffer = async (req, res) => {
 
 exports.deleteoffer = async (req, res) => {
     const { id } = req.body
-    console.log(id)
+
     if (id) {
         const data = await Offer.findByIdAndDelete(id)
         res.status(200).json({ status: "OK", message: "Offer  deleted Successfully", error: "0" });
     } else {
         res.status(500).json({ status: "OK", message: "Offer  not  found", error: "1" });
+    }
+}
+
+exports.getuseroffer = async (req, res) => {
+    try {
+        const { id } = req.query;
+        const data = await Offer.find({ 'created_by': id })
+        res.status(201).json({ status: "OK", message: "Offer fecth successfully", error: "0", data: data });
+    } catch (err) {
+        res.status(500).json({ status: "OK", message: "Offer Not Found", error: "1" })
     }
 }
 
@@ -90,7 +100,7 @@ exports.getOfferByUrl = async (req, res) => {
         }
 
         res.status(200).json({
-            message: "Product fetched successfully",
+            message: "Offer fetched successfully",
             data: offerdata,
             error: 0
         });

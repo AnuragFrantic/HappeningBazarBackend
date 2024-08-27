@@ -12,7 +12,7 @@ const { createdescription, getalldescription, deletedesc, updatedescription, del
 const { createitem, getallitem, getuserProduct, deleteitem, updateitem, getProductByUrl } = require("../controller/ProductController");
 const { createContact, getContact } = require("../controller/ContactController");
 const { reportraise, getAllreport, getuserreport } = require("../controller/ReportController");
-const { createoffer, getalloffer, putoffer, deleteoffer, getOfferByUrl } = require("../controller/OfferController");
+const { createoffer, getalloffer, putoffer, deleteoffer, getOfferByUrl, getuseroffer } = require("../controller/OfferController");
 const { createEvent, getallevent, deleteevent, updateevent } = require("../controller/EventController");
 const { createStore, getAllStores, updateStore, deleteStore, getvendorstore } = require("../controller/CreateController");
 
@@ -107,6 +107,9 @@ router.get('/getuserproduct', getuserProduct)
 router.delete('/product/:id', deleteitem)
 router.put('/update_product/:id', upload.single('image'), updateitem);
 router.get('/getproduct/:url', getProductByUrl)
+// router.get('/getstoreproduct/:store', getProductByStore)
+
+
 
 
 
@@ -131,6 +134,8 @@ router.post('/offer', createoffer)
 router.get('/offer', getalloffer)
 router.put('/offer', putoffer)
 router.delete('/offer', deleteoffer)
+router.get('/getuseroffer', getuseroffer)
+
 router.get('/getoffer/:url', getOfferByUrl)
 
 

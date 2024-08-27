@@ -18,7 +18,6 @@ const StoreSchema = new mongoose.Schema({
 
 }, {
     timestamps: true
-
 })
 
 
