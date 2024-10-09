@@ -12,10 +12,10 @@ const secretKey = "Secretkey";
 
 exports.PostRegister = async (req, res) => {
     try {
-        // Check if email already exists
+
         let existingUser = await Register.findOne({ email: req.body.email });
         if (existingUser) {
-            return res.status(409).json({ error: "1", message: "Email already exists", details: [{ field: "email", message: "Email already exists" }] });
+            return res.status(500).json({ error: "1", message: "Email already exists", details: [{ field: "email", message: "Email already exists" }] });
         }
 
         // Create a new instance of the Register model with request body
@@ -49,9 +49,12 @@ exports.PostRegister = async (req, res) => {
             // Include email in error details if missing
             if (!req.body.email) {
                 errorDetails.push({ field: "email", message: "Email is required" });
+            } if (!req.body.password) {
+                errorDetails.push({ field: "password", message: "Password is required" });
             }
 
-            return res.status(400).json({ error: "1", message: "Validation error", details: errorDetails });
+            return res.status(400).json({ error: "1", message: "Please fill out the form properly.", details: errorDetails });
+
         }
 
         // Save the new user
@@ -76,7 +79,7 @@ exports.getallRegister = async (req, res) => {
     try {
         const data = await Register.find();
         if (!data || data.length === 0) {
-            return res.status(404).json({ message: 'Data Not Found' });
+            return res.status(500).json({ message: 'Data Not Found' });
         }
         res.status(200).json({ data: data });
     } catch (err) {
@@ -105,7 +108,7 @@ exports.putRegister = async (req, res) => {
         const user = await Register.findByIdAndUpdate(req.body._id, updateData, { new: true });
 
         if (!user) {
-            return res.status(404).json({ message: "User not found!" });
+            return res.status(500).json({ message: "User not found!" });
         }
 
         res.status(200).json({ message: "Data Update Succesfully", error: "0" });
@@ -123,7 +126,7 @@ exports.deleteRegister = async (req, res) => {
         const user = await Register.findByIdAndDelete(req.body._id, req.body, { useFindAndModify: false });
 
         if (!user) {
-            return res.status(404).json({ message: "User not found!" });
+            return res.status(500).json({ message: "User not found!" });
 
         }
         res.status(200).json({ message: "Deleted Successfully!" });
@@ -156,7 +159,7 @@ exports.getProfile = async (req, res) => {
             // Fetch user data based on the user ID from the token
             const userData = await Register.findById(userId);
             if (!userData) {
-                return res.status(404).json({ message: "User not found!" });
+                return res.status(500).json({ message: "User not found!" });
             }
             res.status(200).json(userData);
         });

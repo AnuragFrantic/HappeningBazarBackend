@@ -1,6 +1,6 @@
 const express = require("express");
 const { storeCat, getAllCategory, deleteCategory, updateCategory } = require("../controller/Categories");
-const { substore, getallsubcat, deletesubcat, updateSubCategory, getbycategory } = require("../controller/SubCategory");
+const { substore, getallsubcat, deletesubcat, updateSubCategory, getbycategory, getAllCategoriesWithSubcategories } = require("../controller/SubCategory");
 
 const upload = require('../Config/Multerconfig');
 const { PostRegister, getallRegister, putRegister, deleteRegister, getProfile, getbyUser } = require("../Auth/RegisterController");
@@ -9,12 +9,12 @@ const { postlocation, getlocation } = require("../controller/LocationController"
 
 const { createBanner, getBanners, updateBanner, deleteBanner } = require("../controller/Multipleimage");
 const { createdescription, getalldescription, deletedesc, updatedescription, deleteImage, clearAllImages, descriptionbyuser, getdescriptionbyurl } = require("../controller/DescriptionController");
-const { createitem, getallitem, getuserProduct, deleteitem, updateitem, getProductByUrl } = require("../controller/ProductController");
+const { createitem, getallitem, getuserProduct, deleteitem, updateitem, getProductByUrl, getStoreurlbyproduct, findProductByUrl } = require("../controller/ProductController");
 const { createContact, getContact } = require("../controller/ContactController");
 const { reportraise, getAllreport, getuserreport } = require("../controller/ReportController");
 const { createoffer, getalloffer, putoffer, deleteoffer, getOfferByUrl, getuseroffer } = require("../controller/OfferController");
 const { createEvent, getallevent, deleteevent, updateevent } = require("../controller/EventController");
-const { createStore, getAllStores, updateStore, deleteStore, getvendorstore } = require("../controller/CreateController");
+const { createStore, getAllStores, updateStore, deleteStore, getvendorstore, getstores_by_Subcategory_url } = require("../controller/CreateController");
 
 
 const router = express.Router();
@@ -33,7 +33,9 @@ router.delete("/deletecategory/:id", verifyToken, adminAuth, deleteCategory);
 router.post("/subcategory", verifyToken, adminAuth, upload.single("image"), substore);
 router.get("/subcategory", getallsubcat);
 
-router.get("/subcategory/:id", verifyToken, getbycategory);
+router.get("/subcategory/:id", getbycategory);
+
+router.get('/category_with_subcategory', getAllCategoriesWithSubcategories);
 
 
 router.delete("/deletesubcategory/:id", verifyToken, adminAuth, deletesubcat);
@@ -81,8 +83,9 @@ router.get("/description", getalldescription)
 
 router.delete("/description/:id", deletedesc)
 
-router.get("/getuserdesc", descriptionbyuser)
+router.get("/getuserdesc/:id", descriptionbyuser)
 router.get("/getdescription/:url", getdescriptionbyurl)
+router.get('/description/:url', getdescriptionbyurl)
 
 
 
@@ -100,13 +103,14 @@ router.delete("/description/:descriptionId/images", clearAllImages);
 
 //product
 
-router.post('/product', upload.single('image'), createitem)
+router.post('/product', upload.array('image', 8), createitem)
 router.get('/product', getallitem)
 
 router.get('/getuserproduct', getuserProduct)
 router.delete('/product/:id', deleteitem)
-router.put('/update_product/:id', upload.single('image'), updateitem);
-router.get('/getproduct/:url', getProductByUrl)
+router.put('/update_product/:id', upload.array('image'), updateitem);
+router.get('/getproduct/:url', getStoreurlbyproduct)
+router.get('/product/:url', findProductByUrl)
 // router.get('/getstoreproduct/:store', getProductByStore)
 
 
@@ -158,7 +162,9 @@ router.put("/store/:id", upload.single("image"), updateStore)
 
 router.get("/vendorstore/:id", getvendorstore)
 
-router.delete("/store", deleteStore)
+router.delete("/store/:id", deleteStore)
+
+router.get('/store/:url', getstores_by_Subcategory_url)
 
 
 

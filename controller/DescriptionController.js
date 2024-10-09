@@ -111,7 +111,7 @@ exports.deletedesc = async (req, res) => {
     try {
         const data = await DescriptionModal.findByIdAndDelete(req.params.id)
         if (!data) {
-            return res.status(404).send({ "status": "Failed", "message": "Description not found" });
+            return res.status(500).send({ "status": "Failed", "message": "Description not found" });
         }
         res.status(200).send({ "status": "OK", "message": "Description deleted successfully", data: data, error: 0 });
     } catch (e) {
@@ -130,9 +130,9 @@ exports.updatedescription = async (req, res) => {
         // Find the existing description by ID
         let description = await DescriptionModal.findById(id);
 
-        // If the description doesn't exist, return a 404 error
+        // If the description doesn't exist, return a 500 error
         if (!description) {
-            return res.status(404).send({ "status": "Failed", "message": "Description not found" });
+            return res.status(500).send({ "status": "Failed", "message": "Description not found" });
         }
 
         // Update the existing fields
@@ -187,7 +187,7 @@ exports.getdescriptionbyurl = async (req, res) => {
         ]);
 
         if (description.length === 0) {
-            return res.status(404).json({ message: 'Description not found' });
+            return res.status(500).json({ message: 'Description not found' });
         }
 
         res.status(200).json({
@@ -223,7 +223,7 @@ exports.deleteImage = async (req, res) => {
 
 
         if (!description) {
-            return res.status(404).json({ message: "Description not found" });
+            return res.status(500).json({ message: "Description not found" });
         }
 
         // Image successfully deleted
@@ -247,7 +247,7 @@ exports.clearAllImages = async (req, res) => {
         );
 
         if (!description) {
-            return res.status(404).json({ message: "Description not found" });
+            return res.status(500).json({ message: "Description not found" });
         }
 
         // All images successfully deleted
@@ -259,12 +259,70 @@ exports.clearAllImages = async (req, res) => {
 
 
 
+// exports.getdescription_by_store = async (req, res) => {
+//     try {
+//         const url = req.params.url;
+
+//         const data = await DescriptionModal.aggregate([
+//             {
+//                 // Lookup to join store details based on the store field
+//                 $lookup: {
+//                     from: 'stores', // The name of the store collection
+//                     localField: 'store', // Field from Description
+//                     foreignField: '_id', // Field from Store
+//                     as: 'storeDetail'
+//                 }
+//             },
+//             {
+//                 // Unwind the array of storeDetails (since lookup returns an array)
+//                 $unwind: {
+//                     path: '$storeDetail',
+//                     preserveNullAndEmptyArrays: true
+//                 }
+//             },
+//             {
+//                 // Match where the store's URL matches the provided URL
+//                 $match: { 'storeDetail.url': url }
+//             },
+//             {
+//                 // Project to include all fields from Description and relevant store details
+//                 $project: {
+//                     _id: 1,
+//                     store_name: '$storeDetail.title', // Get the title from the store details
+//                     image: '$storeDetail.image', // Image from the store details
+//                     short_detail: 1, // Keep the short detail from Description
+//                     detail: 1, // Keep the detail from Description
+//                     created_by: 1,
+//                     createdAt: 1,
+//                     updatedAt: 1
+//                 }
+//             }
+//         ]);
+
+//         // If no data found, return an error
+//         if (!data || data.length === 0) {
+//             return res.status(404).json({ error: 1, message: "No description found for the given store URL" });
+//         }
+
+//         // Return the matched descriptions with all relevant fields
+//         res.status(200).json({ error: 0, data });
+//     } catch (err) {
+//         res.status(500).json({ error: 1, message: err.message });
+//     }
+// };
+
+
+
+
 exports.descriptionbyuser = async (req, res) => {
     try {
-        const { id } = req.query;
+        const id = req.params.id
 
         // Find descriptions where the "created_by" field matches the provided user ID
-        const data = await DescriptionModal.find({ "created_by": id });
+        const data = await DescriptionModal.find({ "created_by": id }).populate({
+            path: "created_by store",
+            select: "_id name title url"
+        });
 
         if (data.length > 0) {
             res.status(200).json({ data, message: "Data Fetched Successfully", error: 0 });

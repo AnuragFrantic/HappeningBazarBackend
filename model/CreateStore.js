@@ -6,6 +6,7 @@ const StoreSchema = new mongoose.Schema({
     desc: { type: String },
     image: { type: String },
     category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
+    subcategory: { type: mongoose.Schema.Types.ObjectId, ref: "SubCategory" },
     description: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Description' }],
 
     product: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],

@@ -78,7 +78,7 @@ exports.updateevent = async (req, res) => {
         }
 
         if (!updateEvent) {
-            return res.status(404).send({ message: 'Event not found', error: "1" });
+            return res.status(500).send({ message: 'Event not found', error: "1" });
         }
 
         res.status(200).json({ status: "OK", message: "Event  Updated Successfully", error: "0", updateEvent });

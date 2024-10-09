@@ -34,7 +34,7 @@ exports.getBannerById = (req, res) => {
     Banner.findById(id)
         .then(banner => {
             if (!banner) {
-                return res.status(404).json({ message: 'Banner not found', error: 1 });
+                return res.status(500).json({ message: 'Banner not found', error: 1 });
             }
             res.status(200).send({ "status": "OK", data: banner, error: 0 })
         })
@@ -49,7 +49,7 @@ exports.updateBanner = (req, res) => {
     Banner.findByIdAndUpdate(id, { position, image: images }, { new: true })
         .then(banner => {
             if (!banner) {
-                return res.status(404).json({ message: 'Banner not found', error: 1 });
+                return res.status(500).json({ message: 'Banner not found', error: 1 });
             }
             res.status(200).send({ "status": "OK", "message": "Banner Updated Successfully", error: 0 })
         })
@@ -64,7 +64,7 @@ exports.deleteBanner = (req, res) => {
     Banner.findByIdAndDelete(id)
         .then(banner => {
             if (!banner) {
-                return res.status(404).json({ message: 'Banner not found', error: 1 });
+                return res.status(500).json({ message: 'Banner not found', error: 1 });
             }
             res.status(200).send({ "status": "OK", "message": "Banner Deleted Successfully", error: 0 })
         })

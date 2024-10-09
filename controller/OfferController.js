@@ -37,7 +37,7 @@ exports.putoffer = async (req, res) => {
         const updatedUser = await Offer.findByIdAndUpdate(id, updatedData, { new: true });
 
         if (!updatedUser) {
-            return res.status(404).send({ message: 'User not found', error: "1" });
+            return res.status(500).send({ message: 'User not found', error: "1" });
         }
 
         res.status(200).json({ status: "OK", message: "Offer  Updated Successfully", error: "0", updatedUser });
@@ -96,7 +96,7 @@ exports.getOfferByUrl = async (req, res) => {
         ]);
 
         if (offerdata.length === 0) {
-            return res.status(404).json({ message: 'No Offer found for the given URL' });
+            return res.status(500).json({ message: 'No Offer found for the given URL' });
         }
 
         res.status(200).json({

@@ -26,7 +26,7 @@ exports.getOpenHourById = async (req, res) => {
     try {
         const openHour = await OpenHour.findById(req.params.id).populate('store');
         if (!openHour) {
-            return res.status(404).json({ error: 1, message: 'OpenHour not found' });
+            return res.status(500).json({ error: 1, message: 'OpenHour not found' });
         }
         res.status(200).json({ error: 0, data: openHour });
     } catch (error) {
@@ -39,7 +39,7 @@ exports.updateOpenHour = async (req, res) => {
     try {
         const updatedOpenHour = await OpenHour.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('store');
         if (!updatedOpenHour) {
-            return res.status(404).json({ error: 1, message: 'OpenHour not found' });
+            return res.status(500).json({ error: 1, message: 'OpenHour not found' });
         }
         res.status(200).json({ error: 0, data: updatedOpenHour });
     } catch (error) {
@@ -52,7 +52,7 @@ exports.deleteOpenHour = async (req, res) => {
     try {
         const deletedOpenHour = await OpenHour.findByIdAndDelete(req.params.id);
         if (!deletedOpenHour) {
-            return res.status(404).json({ error: 1, message: 'OpenHour not found' });
+            return res.status(500).json({ error: 1, message: 'OpenHour not found' });
         }
         res.status(200).json({ error: 0, message: 'OpenHour deleted successfully' });
     } catch (error) {

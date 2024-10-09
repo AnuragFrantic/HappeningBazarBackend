@@ -5,7 +5,7 @@ const ImageSchema = new mongoose.Schema({
 });
 
 const DescriptionSchema = new mongoose.Schema({
-    store_name: { type: String, required: true },
+    store_name: { type: String },
     image: [ImageSchema],
     short_detail: { type: String },
     detail: { type: String },
