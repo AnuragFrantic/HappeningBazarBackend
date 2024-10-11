@@ -15,7 +15,7 @@ exports.createEvent = async (req, res) => {
 
         // Find the user associated with the event
         const user = await UserModel.findById({ "_id": req.body.created_by }); // Assuming userId is set in the request
-        console.log(user)
+
         // Update the user's events array
         user.events.push(newEvent._id); // Assuming user.events is an array of event IDs
         await user.save();
@@ -86,5 +86,40 @@ exports.updateevent = async (req, res) => {
         console.error(error);
 
         res.status(500).json({ status: "OK", message: "An error occurred while updating the user", error: "1" });
+    }
+};
+
+
+
+
+exports.eventbyurl = async (req, res) => {
+    const url = req.params.url;
+
+    try {
+        // Fetch the event by URL
+        const data = await eventmodal.findOne({ url: url });
+
+        // If event is not found, return a 404 status
+        if (!data) {
+            return res.status(404).json({
+                message: "Event not found",
+                error: 1
+            });
+        }
+
+        // Send the event data if found
+        res.status(200).json({
+            message: "Event found successfully",
+            data: data,
+            error: 0
+        });
+
+    } catch (err) {
+        // Handle errors and return a 500 status code
+        console.log(err);
+        res.status(500).json({
+            message: "Error fetching event",
+            error: err.message
+        });
     }
 };

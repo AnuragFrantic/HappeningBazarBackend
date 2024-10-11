@@ -9,8 +9,11 @@ const EventSchema = new mongoose.Schema({
     state: { type: String },
     detail: { type: String },
     created_by: { type: mongoose.Schema.Types.ObjectId, required: true },
-    // store: { type: mongoose.Schema.Types.ObjectId, ref: "Store", required: true },
+    store: { type: mongoose.Schema.Types.ObjectId, ref: "Store", required: true },
+
     amount: { type: String },
+    start_time: { type: String },
+    end_time: { type: String },
     url: {
         type: String,
         unique: true,

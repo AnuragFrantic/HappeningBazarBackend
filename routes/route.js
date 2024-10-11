@@ -13,8 +13,10 @@ const { createitem, getallitem, getuserProduct, deleteitem, updateitem, getProdu
 const { createContact, getContact } = require("../controller/ContactController");
 const { reportraise, getAllreport, getuserreport } = require("../controller/ReportController");
 const { createoffer, getalloffer, putoffer, deleteoffer, getOfferByUrl, getuseroffer } = require("../controller/OfferController");
-const { createEvent, getallevent, deleteevent, updateevent } = require("../controller/EventController");
+const { createEvent, getallevent, deleteevent, updateevent, eventbyurl } = require("../controller/EventController");
 const { createStore, getAllStores, updateStore, deleteStore, getvendorstore, getstores_by_Subcategory_url } = require("../controller/CreateController");
+const { createmembership, getallmembership, getmembershipbyid, updatemembership, deletemembership } = require("../controller/MembershipController");
+const { createRegistration, getAllRegistrations, getRegistrationById, deleteRegistration, updateRegistration } = require("../controller/EventRegistrationController");
 
 
 const router = express.Router();
@@ -152,6 +154,8 @@ router.post('/events', upload.single("image"), createEvent)
 router.get('/events', getallevent)
 router.delete('/events', deleteevent)
 router.put('/events', upload.single("image"), updateevent)
+router.get('/events/:url', eventbyurl)
+
 
 
 //store
@@ -168,7 +172,31 @@ router.get('/store/:url', getstores_by_Subcategory_url)
 
 
 
+//membership
+
+router.post('/membership', upload.single('image'), createmembership)
+router.get('/membership', getallmembership)
 
 
+
+
+
+router.get('/membership/:id', getmembershipbyid);
+
+
+router.put('/membership/:id', updatemembership);
+
+
+
+
+router.delete('/membership/:id', deletemembership);
+
+
+// eventregistration 
+router.post('/event_register', createRegistration);
+router.get('/event_register', getAllRegistrations);
+router.get('/event_register/:id', getRegistrationById);
+router.put('/event_register/:id', updateRegistration);
+router.delete('/event_register/:id', deleteRegistration);
 
 module.exports = router;
