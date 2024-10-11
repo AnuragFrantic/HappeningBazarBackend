@@ -8,7 +8,8 @@ exports.createRegistration = async (req, res) => {
         const savedRegistration = await newRegistration.save();
         return res.status(201).json({
             message: 'Registration successful',
-            registration: savedRegistration
+            registration: savedRegistration,
+            error: 0
         });
     } catch (error) {
         return res.status(500).json({ error: error.message });
@@ -19,7 +20,7 @@ exports.createRegistration = async (req, res) => {
 exports.getAllRegistrations = async (req, res) => {
     try {
         const registrations = await EventRegistration.find().populate('event user');
-        return res.status(200).json(registrations);
+        return res.status(200).json({ message: "Event Registration Fetch Succesfully", data: registrations, error: 0 });
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }
