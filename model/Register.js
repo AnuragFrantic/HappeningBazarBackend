@@ -18,6 +18,7 @@ const RegisterSchema = new mongoose.Schema({
         type: String,
         enum: ['pending', 'cancelled', 'accepted']
     },
+    deleted_at: { type: String },
     events: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }],
     description: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Description' }]
 }, {
