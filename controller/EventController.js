@@ -41,6 +41,7 @@ exports.createEvent = async (req, res) => {
 
 exports.getallevent = async (req, res) => {
     try {
+
         // Get state and city from query parameters
         const { state, city } = req.query;
 
