@@ -4,10 +4,15 @@ const Offer = require('../model/OffersModal')
 exports.createoffer = async (req, res) => {
     try {
         const data = await Offer(req.body);
+        if (req.file) {
+            data.image = req.file.path
+        }
 
         await data.save()
+
         res.status(201).json({ status: "OK", message: "Offer  created Successfully", error: "0" });
     } catch (e) {
+
         res.status(500).json({ status: "OK", message: "Offer Not created", error: "1" });
     }
 }
@@ -15,36 +20,58 @@ exports.createoffer = async (req, res) => {
 
 exports.getalloffer = async (req, res) => {
     try {
-        const data = await Offer.find()
-        res.status(200).json({ status: "OK", message: "Offer  Fetch Successfully", error: "0", data });
+        const { state, city } = req.query;
 
+        // Build a filter object
+        let filter = {};
+
+
+        if (state) {
+            filter.state = state;
+        }
+        if (city) {
+            filter.city = city;
+        }
+
+        // Fetch offers based on the filter
+        const data = await Offer.find(filter);
+
+        res.status(200).json({ status: "OK", message: "Offer Fetch Successfully", error: "0", data });
     } catch (e) {
+        console.error(e);
         res.status(500).json({ status: "OK", message: "Offer Not Found", error: "1" });
     }
-}
+};
+
+
+
 
 
 
 exports.putoffer = async (req, res) => {
     const { id, ...updatedData } = req.body;
 
-
     if (!id) {
-        return res.status(400).send({ message: 'User ID is required' });
+        return res.status(400).send({ message: 'Offer ID is required' });
     }
 
     try {
-        const updatedUser = await Offer.findByIdAndUpdate(id, updatedData, { new: true });
-
-        if (!updatedUser) {
-            return res.status(500).send({ message: 'User not found', error: "1" });
+        // If a new image is uploaded, update the image field
+        if (req.file) {
+            updatedData.image = req.file.path;
         }
 
-        res.status(200).json({ status: "OK", message: "Offer  Updated Successfully", error: "0", updatedUser });
+        // Find and update the offer
+        const updatedOffer = await Offer.findByIdAndUpdate(id, updatedData, { new: true });
+
+        if (!updatedOffer) {
+            return res.status(404).send({ message: 'Offer not found', error: "1" });
+        }
+
+        res.status(200).json({ status: "OK", message: "Offer Updated Successfully", error: "0", updatedOffer });
     } catch (error) {
         console.error(error);
-
-        res.status(500).json({ status: "OK", message: "An error occurred while updating the user", error: "1" });
+        res.status(500).json({ status: "OK", message: "An error occurred while updating the offer", error: "1" });
     }
 };
 
@@ -75,10 +102,16 @@ exports.getuseroffer = async (req, res) => {
 exports.getOfferByUrl = async (req, res) => {
     try {
         const url = req.params.url;
+
+
+        // Fetch offer details along with the related store details
         const offerdata = await Offer.aggregate([
             {
+                $match: { url: url } // Match the offer's own URL field
+            },
+            {
                 $lookup: {
-                    from: 'stores',
+                    from: 'stores', // Lookup related store details
                     localField: 'store',
                     foreignField: '_id',
                     as: 'storeDetails'
@@ -87,16 +120,13 @@ exports.getOfferByUrl = async (req, res) => {
             {
                 $unwind: {
                     path: '$storeDetails',
-                    preserveNullAndEmptyArrays: true // to include documents without storeDetails
+                    preserveNullAndEmptyArrays: true // Include offers even if no storeDetails
                 }
-            },
-            {
-                $match: { "storeDetails.url": url }
             }
         ]);
 
         if (offerdata.length === 0) {
-            return res.status(500).json({ message: 'No Offer found for the given URL' });
+            return res.status(404).json({ message: 'No Offer found for the given URL', error: 1 });
         }
 
         res.status(200).json({
@@ -105,9 +135,11 @@ exports.getOfferByUrl = async (req, res) => {
             error: 0
         });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error });
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: 1 });
     }
 };
+
 
 
 

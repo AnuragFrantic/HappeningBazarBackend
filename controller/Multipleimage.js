@@ -1,14 +1,13 @@
-// bannerController.js
+
 const Banner = require('../model/Multipleimage'); // Adjust the path to your Banner model
 
-// Create a new banner
+
 exports.createBanner = (req, res) => {
     try {
         const { position } = req.body;
         const images = req.files.map(file => file.path);
 
         const newBanner = new Banner({ position, image: images });
-
         newBanner.save()
         res.status(200).send({ "status": "OK", "message": "Banner Created Successfully", error: 0 })
     } catch (e) {

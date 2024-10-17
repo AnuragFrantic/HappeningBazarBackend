@@ -20,8 +20,20 @@ exports.createStore = async (req, res) => {
 
 exports.getAllStores = async (req, res) => {
     try {
+        const { state, city } = req.query;
 
-        const stores = await Store.find()
+        // Build the filter object for state and city
+        let filter = {};
+
+        if (state) {
+            filter.state = state;
+        }
+        if (city) {
+            filter.city = city;
+        }
+
+        // Find stores with the optional filters and populate category and subcategory fields
+        const stores = await Store.find(filter)
             .populate('category', 'name')
             .populate('subcategory', 'type url');
 
@@ -30,6 +42,9 @@ exports.getAllStores = async (req, res) => {
         res.status(500).json({ error: 1, message: err.message });
     }
 };
+
+
+
 
 
 

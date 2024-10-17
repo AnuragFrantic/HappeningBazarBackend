@@ -17,6 +17,7 @@ const { createEvent, getallevent, deleteevent, updateevent, eventbyurl } = requi
 const { createStore, getAllStores, updateStore, deleteStore, getvendorstore, getstores_by_Subcategory_url } = require("../controller/CreateController");
 const { createmembership, getallmembership, getmembershipbyid, updatemembership, deletemembership } = require("../controller/MembershipController");
 const { createRegistration, getAllRegistrations, getRegistrationById, deleteRegistration, updateRegistration } = require("../controller/EventRegistrationController");
+const { getAllStates, getStateByIsoCode } = require("../controller/StateController");
 
 
 const router = express.Router();
@@ -136,9 +137,9 @@ router.get('/userreport', getuserreport)
 
 //offer
 
-router.post('/offer', createoffer)
+router.post('/offer', upload.single("image"), createoffer)
 router.get('/offer', getalloffer)
-router.put('/offer', putoffer)
+router.put('/offer', upload.single("image"), putoffer)
 router.delete('/offer', deleteoffer)
 router.get('/getuseroffer', getuseroffer)
 
@@ -198,5 +199,13 @@ router.get('/event_register', getAllRegistrations);
 router.get('/event_register/:id', getRegistrationById);
 router.put('/event_register/:id', updateRegistration);
 router.delete('/event_register/:id', deleteRegistration);
+
+
+//state
+
+router.get('/states', getAllStates);
+
+
+router.get('/states/:isoCode', getStateByIsoCode);
 
 module.exports = router;

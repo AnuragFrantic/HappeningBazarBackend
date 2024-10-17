@@ -1,29 +1,27 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 const OfferSchema = new mongoose.Schema({
-    name: { type: String, required: true }, // Name of the offer or coupon
-    description: { type: String, required: true }, // Description of the offer
-    deleted_price: { type: String }, // Original price (crossed out in UI)
-    real_price: { type: String }, // Actual price after discount
-    membership: { type: mongoose.Schema.Types.ObjectId, ref: "Membership" }, // Reference to Membership
-    min_off: { type: String }, // Minimum discount
-    max_off: { type: String }, // Maximum discount
+    name: { type: String, required: true },
+    description: { type: String, required: true },
+    deleted_price: { type: Number },
+    real_price: { type: Number },
+    membership: { type: mongoose.Schema.Types.ObjectId, ref: "Membership" },
+    min_off: { type: Number },
+    max_off: { type: Number },
+    alluser: { type: String },
+    image: { type: String },
 
-    // Offer type (either Percent or Value)
     type: {
         type: String,
         enum: ["Percent", "Value"],
         required: true
     },
 
-    offer_detail: [
-        {
-            detail: { type: String }, // Detail of the offer
-            validity: { type: String }, // Validity period of the offer
-            redeem: { type: String }, // Redeem information
-            terms: { type: String } // Terms and conditions of the offer
-        }
-    ],
+    offer_detail: { type: String },
+    offer_validity: { type: String },
+    offer_redeem: { type: String },
+    offer_terms: { type: String },
 
     created_by: {
         type: mongoose.Schema.Types.ObjectId,
@@ -33,23 +31,58 @@ const OfferSchema = new mongoose.Schema({
 
     store: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Store",
-        required: true
+        ref: "Store"
     },
 
-    code: { type: String, required: true, unique: true }, // Unique coupon code
-    discount_amount: { type: String, required: true }, // Discount amount if applicable
-    discount_percentage: { type: String }, // Discount percentage if applicable
-    minimum_purchase: { type: String }, // Minimum purchase amount required for applying the coupon
-    maximum_discount: { type: String }, // Maximum discount that can be applied
-    usage_limit: { type: Number, default: 1 }, // How many times a coupon can be used
-    expiry_date: { type: Date, required: true }, // Expiration date of the coupon
-
+    code: { type: String, required: true, unique: true },
+    discount_amount: { type: Number },
+    discount_percentage: { type: String },
+    minimum_purchase: { type: Number },
+    maximum_discount: { type: Number },
+    usage_limit: { type: Number, default: 1 },
+    start_date: { type: Date },
+    expiry_date: { type: Date },
+    state: { type: String },
+    city: { type: String },
 
     is_active: { type: Boolean, default: true },
-    is_deleted: { type: Boolean, default: false }
+    is_deleted: { type: Boolean, default: false },
+    url: {
+        type: String,
+        unique: true,
+        required: true
+    },
 }, {
     timestamps: true
+});
+
+// Helper function to generate unique slug
+async function generateUniqueSlug(instance, baseSlug, counter = 1) {
+    const newSlug = `${baseSlug}-${counter}`;
+
+    const existing = await mongoose.models.Offer.findOne({ url: newSlug });
+
+    if (existing) {
+        return generateUniqueSlug(instance, baseSlug, counter + 1);
+    }
+
+    return newSlug;
+}
+
+// Middleware to generate slug before saving
+OfferSchema.pre('validate', async function (next) {
+    if (this.name) {
+        let baseSlug = slugify(this.name, { lower: true, remove: /[*+~.()'"!:@/]/g });
+
+        const existingOffer = await mongoose.models.Offer.findOne({ url: baseSlug, _id: { $ne: this._id } });
+
+        if (existingOffer) {
+            this.url = await generateUniqueSlug(this, baseSlug);
+        } else {
+            this.url = baseSlug;
+        }
+    }
+    next();
 });
 
 module.exports = mongoose.model('Offer', OfferSchema);

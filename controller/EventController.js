@@ -28,15 +28,42 @@ exports.createEvent = async (req, res) => {
 };
 
 
+// exports.getallevent = async (req, res) => {
+//     try {
+//         const data = await eventmodal.find()
+
+//         res.status(201).json({ status: "OK", message: "Event fetch Succesfully", error: "0", data });
+//     } catch (err) {
+//         res.status(500).json({ status: "OK", message: "Event Not Found", error: "1" });
+//     }
+// }
+
+
 exports.getallevent = async (req, res) => {
     try {
-        const data = await eventmodal.find()
+        // Get state and city from query parameters
+        const { state, city } = req.query;
 
-        res.status(201).json({ status: "OK", message: "Event fetch Succesfully", error: "0", data });
+        // Build a filter object
+        let filter = {};
+
+        if (state) {
+            filter.state = state;
+        }
+        if (city) {
+            filter.city = city;
+        }
+
+        // Fetch events based on the filter
+        const data = await eventmodal.find(filter);
+
+        res.status(201).json({ status: "OK", message: "Event fetched successfully", error: "0", data });
     } catch (err) {
-        res.status(500).json({ status: "OK", message: "Event Not Found", error: "1" });
+        console.error(err);
+        res.status(500).json({ status: "ERROR", message: "Event not found", error: "1" });
     }
-}
+};
+
 
 
 

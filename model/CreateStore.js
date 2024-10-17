@@ -8,7 +8,8 @@ const StoreSchema = new mongoose.Schema({
     category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
     subcategory: { type: mongoose.Schema.Types.ObjectId, ref: "SubCategory" },
     description: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Description' }],
-
+    state: { type: String },
+    city: { type: String },
     product: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
     url: {
         type: String,
