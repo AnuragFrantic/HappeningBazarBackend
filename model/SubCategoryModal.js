@@ -2,9 +2,14 @@ const mongoose = require("mongoose");
 const { default: slugify } = require("slugify");
 
 
+const ImageSchema = new mongoose.Schema({
+    img: { type: String }
+});
+
 const SubCategorySchema = new mongoose.Schema({
     title: { type: String },
-    image: { type: String },
+    // Change the image field to store multiple objects
+    image: [ImageSchema],
     type: { type: String },
     status: { type: String },
     review: { type: String },
@@ -15,10 +20,9 @@ const SubCategorySchema = new mongoose.Schema({
         unique: true,
         required: true
     },
-
 }, {
     timestamps: true
-})
+});
 
 async function generateUniqueSlug(instance, baseSlug, counter = 1) {
 
@@ -57,3 +61,6 @@ SubCategorySchema.pre('validate', async function (next) {
 });
 
 module.exports = mongoose.model("SubCategory", SubCategorySchema)
+
+
+

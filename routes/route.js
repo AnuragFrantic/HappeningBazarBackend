@@ -1,10 +1,10 @@
 const express = require("express");
 const { storeCat, getAllCategory, deleteCategory, updateCategory } = require("../controller/Categories");
-const { substore, getallsubcat, deletesubcat, updateSubCategory, getbycategory, getAllCategoriesWithSubcategories } = require("../controller/SubCategory");
+const { substore, getallsubcat, deletesubcat, updateSubCategory, getbycategory, getAllCategoriesWithSubcategories, deleteImageFromSubCategory, deleteImagesubsubCategory } = require("../controller/SubCategory");
 
 const upload = require('../Config/Multerconfig');
-const { PostRegister, getallRegister, putRegister, deleteRegister, getProfile, getbyUser } = require("../Auth/RegisterController");
-const { verifyToken, LoginController, adminAuth, usercheckstatus } = require("../Auth/LoginController");
+const { PostRegister, getallRegister, putRegister, deleteRegister, getbyUser } = require("../Auth/RegisterController");
+const { verifyToken, LoginController, adminAuth, usercheckstatus, getProfile } = require("../Auth/LoginController");
 const { postlocation, getlocation } = require("../controller/LocationController");
 
 const { createBanner, getBanners, updateBanner, deleteBanner } = require("../controller/Multipleimage");
@@ -18,6 +18,7 @@ const { createStore, getAllStores, updateStore, deleteStore, getvendorstore, get
 const { createmembership, getallmembership, getmembershipbyid, updatemembership, deletemembership } = require("../controller/MembershipController");
 const { createRegistration, getAllRegistrations, getRegistrationById, deleteRegistration, updateRegistration } = require("../controller/EventRegistrationController");
 const { getAllStates, getStateByIsoCode } = require("../controller/StateController");
+const { storeBlog, getAllBlogs, updateBlog, deleteBlog, blogsbyurl } = require("../controller/BlogController");
 
 
 const router = express.Router();
@@ -33,7 +34,7 @@ router.delete("/deletecategory/:id", verifyToken, adminAuth, deleteCategory);
 
 //subcategory api
 
-router.post("/subcategory", verifyToken, adminAuth, upload.single("image"), substore);
+router.post("/subcategory", verifyToken, adminAuth, upload.array("image", 5), substore);
 router.get("/subcategory", getallsubcat);
 
 router.get("/subcategory/:id", getbycategory);
@@ -42,9 +43,10 @@ router.get('/category_with_subcategory', getAllCategoriesWithSubcategories);
 
 
 router.delete("/deletesubcategory/:id", verifyToken, adminAuth, deletesubcat);
-router.put("/subcategory/:id", verifyToken, adminAuth, upload.single("image"), updateSubCategory);
+router.put("/subcategory/:id", verifyToken, adminAuth, upload.array("image", 5), updateSubCategory);
 
 
+router.delete('/subcategoryimage/:imageId', deleteImagesubsubCategory);
 
 
 
@@ -58,7 +60,7 @@ router.delete("/register", deleteRegister);
 router.get("/user", getbyUser);
 
 router.post('/login', LoginController);
-router.get('/profile', getProfile);
+router.get('/profile', verifyToken, getProfile);
 
 // Location
 router.post("/location", verifyToken, postlocation);
@@ -207,5 +209,21 @@ router.get('/states', getAllStates);
 
 
 router.get('/states/:isoCode', getStateByIsoCode);
+
+//blogs 
+
+
+// Create a new blog (with image upload)
+router.post("/blogs", upload.single("image"), storeBlog);
+
+// Get all blogs
+router.get("/blogs", getAllBlogs);
+
+// Update a blog (with image upload)
+router.put("/blogs/:id", upload.single("image"), updateBlog);
+
+// Delete a blog
+router.delete("/blogs/:id", deleteBlog);
+router.get('/blogs/:url', blogsbyurl)
 
 module.exports = router;

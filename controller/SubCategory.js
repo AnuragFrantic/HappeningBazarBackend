@@ -12,10 +12,13 @@ const { updateCategory } = require("./Categories");
 exports.substore = async (req, res) => {
     try {
         const data = new SubCategoryModal(req.body);
-        if (req.file) {
-            data.image = req.file.path;
-        }
-        await data.save();
+        const images = req.files.map(file => ({ img: file.path }));
+
+        const subServiceCard = new SubCategoryModal({
+            ...req.body,
+            image: images
+        });
+        await subServiceCard.save();
         res.status(201).json({ status: "OK", message: "Subcategory created successfully", error: "0" });
     } catch (e) {
         res.status(500).json({ status: "Failed", message: e.message, error: "1" });
@@ -30,6 +33,7 @@ exports.getallsubcat = async (req, res) => {
         res.status(500).json({ status: "Failed", message: e.message });
     }
 }
+
 
 
 
@@ -68,9 +72,7 @@ exports.updateSubCategory = async (req, res) => {
         const updateData = req.body; // Assuming the update data is sent in the request body
 
         // If an image is uploaded, update the image path
-        if (req.file) {
-            updateData.image = req.file.path;
-        }
+
 
         // Fetch the existing subcategory to check if the type or title has changed
         const subcategory = await SubCategoryModal.findById(categoryId);
@@ -85,6 +87,13 @@ exports.updateSubCategory = async (req, res) => {
 
         // Perform the update
         const updatedCategory = await SubCategoryModal.findByIdAndUpdate(categoryId, updateData, { new: true });
+
+        if (req.files && req.files.length > 0) {
+            const images = req.files.map(file => ({ img: file.path }));
+            subcategory.image.push(...images); // Append new images
+        }
+
+        await subcategory.save();
 
         res.status(200).send({ status: "OK", message: "Data Updated Successfully", data: updatedCategory, error: 0 });
     } catch (error) {
@@ -134,3 +143,27 @@ exports.getAllCategoriesWithSubcategories = async (req, res) => {
     }
 };
 
+
+
+exports.deleteImagesubsubCategory = async (req, res) => {
+    try {
+        const { imageId } = req.params;
+
+
+        // Find the SubServiceCard containing the image to delete
+        const subServiceCard = await SubCategoryModal.findOneAndUpdate(
+            { 'image._id': imageId }, // Find by image _id
+            { $pull: { image: { _id: imageId } } }, // Pull the image with matching _id from the array
+            { new: true } // Return the updated document
+        );
+
+        if (!subServiceCard) {
+            return res.status(404).json({ message: 'Subcategory not found', id: imageId });
+        }
+
+        // Image successfully deleted
+        res.status(200).json({ message: 'Image deleted successfully', data: subServiceCard, error: 0 });
+    } catch (error) {
+        res.status(500).json({ message: error.message, error: 1 });
+    }
+};

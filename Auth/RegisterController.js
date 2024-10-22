@@ -221,47 +221,19 @@ exports.deleteRegister = async (req, res) => {
 
 
 
-exports.getProfile = async (req, res) => {
+
+
+exports.getbyUser = async (req, res) => {
     try {
-        const authHeader = req.headers.authorization;
-
-        if (!authHeader) {
-            return res.status(401).json({ message: "Access denied. No token provided." });
-        }
-
-
-        token = authHeader.split(" ")[1];
-        // Verify token
-        jwt.verify(token, secretKey, async (err, decoded) => {
-            if (err) {
-                return res.status(401).json({ message: "Invalid token." });
-            }
-
-            const userId = decoded.user._id;
-
-            // Fetch user data based on the user ID from the token
-            const userData = await Register.findById(userId);
-            if (!userData) {
-                return res.status(500).json({ message: "User not found!" });
-            }
-            res.status(200).json(userData);
-        });
+        const { type } = req.params
+        console.log(type)
     } catch (error) {
         console.error("Error in getting profile:", error);
         res.status(500).json({ error: "Internal server error" });
     }
-};
+}
 
 
-// exports.getbyUser = async (req, res) => {
-//     try {
-//         const { type } = req.params
-//         console.log(type)
-//     } catch (error) {
-//         console.error("Error in getting profile:", error);
-//         res.status(500).json({ error: "Internal server error" });
-//     }
-// }
 
 
 

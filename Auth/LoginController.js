@@ -38,6 +38,23 @@ exports.LoginController = async (req, res) => {
 
 
 
+exports.getProfile = async (req, res) => {
+    try {
+        const userId = req.user._id;
+
+        // Fetch user data based on the user ID from the token
+        const userData = await Register.findById(userId);
+        if (!userData) {
+            return res.status(404).json({ message: "User not found!" });
+        }
+
+        // Respond with user profile data
+        res.status(200).json({ message: "Profile Fetch Successfull", data: userData, error: "0" });
+    } catch (error) {
+        console.error("Error in getting profile:", error);
+        res.status(500).json({ error: "Internal server error", error: '1' });
+    }
+};
 
 
 
