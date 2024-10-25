@@ -1,7 +1,9 @@
+
 const mongoose = require('mongoose');
-const slugify = require('slugify');
+const { default: slugify } = require('slugify');
 
 const OfferSchema = new mongoose.Schema({
+    // Existing fields
     name: { type: String, required: true },
     description: { type: String, required: true },
     deleted_price: { type: Number },
@@ -11,30 +13,13 @@ const OfferSchema = new mongoose.Schema({
     max_off: { type: Number },
     alluser: { type: String },
     image: { type: String },
-
-    type: {
-        type: String,
-        enum: ["Percent", "Value"],
-        required: true
-    },
-
+    type: { type: String, enum: ["Percent", "Value"], required: true },
     offer_detail: { type: String },
     offer_validity: { type: String },
     offer_redeem: { type: String },
     offer_terms: { type: String },
-
-    created_by: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true
-    }, // Reference to the user who created the offer
-
-    store: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Store"
-    },
-
-    code: { type: String, required: true, unique: true },
+    created_by: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    store: { type: mongoose.Schema.Types.ObjectId, ref: "Store" },
     discount_amount: { type: Number },
     discount_percentage: { type: String },
     minimum_purchase: { type: Number },
@@ -44,7 +29,6 @@ const OfferSchema = new mongoose.Schema({
     expiry_date: { type: Date },
     state: { type: String },
     city: { type: String },
-
     is_active: { type: Boolean, default: true },
     is_deleted: { type: Boolean, default: false },
     url: {
@@ -52,11 +36,30 @@ const OfferSchema = new mongoose.Schema({
         unique: true,
         required: true
     },
-}, {
-    timestamps: true
+    // New fields for tracking codes
+    generated_codes: [
+        {
+            code: { type: String, sparse: true },
+            user: { type: mongoose.Schema.Types.ObjectId, ref: "Register" },
+            vendor: { type: mongoose.Schema.Types.ObjectId, ref: "Register" },
+            valid_until: { type: Date },
+            status: { type: String, enum: ["active", "used", "expired"], default: "active" }
+        }
+    ]
+}, { timestamps: true });
+
+
+
+OfferSchema.pre('save', function (next) {
+    if (this.isNew) {
+        // If generated_codes is not provided, initialize it to an empty array
+        if (!this.generated_codes) {
+            this.generated_codes = [];
+        }
+    }
+    next();
 });
 
-// Helper function to generate unique slug
 async function generateUniqueSlug(instance, baseSlug, counter = 1) {
     const newSlug = `${baseSlug}-${counter}`;
 
@@ -86,3 +89,4 @@ OfferSchema.pre('validate', async function (next) {
 });
 
 module.exports = mongoose.model('Offer', OfferSchema);
+

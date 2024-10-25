@@ -12,13 +12,14 @@ const { createdescription, getalldescription, deletedesc, updatedescription, del
 const { createitem, getallitem, getuserProduct, deleteitem, updateitem, getProductByUrl, getStoreurlbyproduct, findProductByUrl } = require("../controller/ProductController");
 const { createContact, getContact } = require("../controller/ContactController");
 const { reportraise, getAllreport, getuserreport } = require("../controller/ReportController");
-const { createoffer, getalloffer, putoffer, deleteoffer, getOfferByUrl, getuseroffer } = require("../controller/OfferController");
+const { createoffer, getalloffer, putoffer, deleteoffer, getOfferByUrl, getuseroffer, generateOfferCode } = require("../controller/OfferController");
 const { createEvent, getallevent, deleteevent, updateevent, eventbyurl } = require("../controller/EventController");
 const { createStore, getAllStores, updateStore, deleteStore, getvendorstore, getstores_by_Subcategory_url } = require("../controller/CreateController");
 const { createmembership, getallmembership, getmembershipbyid, updatemembership, deletemembership } = require("../controller/MembershipController");
 const { createRegistration, getAllRegistrations, getRegistrationById, deleteRegistration, updateRegistration } = require("../controller/EventRegistrationController");
 const { getAllStates, getStateByIsoCode } = require("../controller/StateController");
 const { storeBlog, getAllBlogs, updateBlog, deleteBlog, blogsbyurl } = require("../controller/BlogController");
+const { validateOfferCode } = require("../controller/AppliedOffercontoller");
 
 
 const router = express.Router();
@@ -146,6 +147,11 @@ router.delete('/offer', deleteoffer)
 router.get('/getuseroffer', getuseroffer)
 
 router.get('/getoffer/:url', getOfferByUrl)
+
+router.post('/generate-code', generateOfferCode);
+
+
+router.post('/apply-offer', validateOfferCode);
 
 
 
