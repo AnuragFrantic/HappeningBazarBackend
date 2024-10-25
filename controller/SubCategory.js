@@ -2,7 +2,7 @@ const SubCategoryModal = require("../model/SubCategoryModal")
 const CategoriesModal = require("../model/CategoriesModal");
 const { default: slugify } = require("slugify");
 const { updateCategory } = require("./Categories");
-
+const mongoose = require("mongoose")
 
 
 
@@ -71,29 +71,36 @@ exports.updateSubCategory = async (req, res) => {
         const categoryId = req.params.id; // Assuming category ID is passed in the request parameters
         const updateData = req.body; // Assuming the update data is sent in the request body
 
-        // If an image is uploaded, update the image path
-
-
-        // Fetch the existing subcategory to check if the type or title has changed
+        // Fetch the existing subcategory to check if it exists
         const subcategory = await SubCategoryModal.findById(categoryId);
         if (!subcategory) {
             return res.status(500).json({ error: "Subcategory not found", error: 1 });
         }
 
-        // Update the `url` field based on the `type` field (or other fields if needed)
+        // If `type` is being updated, ensure the new `url` is unique
         if (updateData.type) {
-            updateData.url = slugify(updateData.type, { lower: true, remove: /[*+~.()'"!:@/]/g });
+            const baseSlug = slugify(updateData.type, { lower: true, remove: /[*+~.()'"!:@/]/g });
+
+            // Check if a subcategory with the same baseSlug exists (excluding the current one)
+            const existingSubcategory = await SubCategoryModal.findOne({ url: baseSlug, _id: { $ne: categoryId } });
+
+            if (existingSubcategory) {
+                // Generate a unique slug if a conflict is found
+                updateData.url = await generateUniqueSlug(subcategory, baseSlug);
+            } else {
+                updateData.url = baseSlug;
+            }
         }
 
-        // Perform the update
+        // Perform the update with the unique `url`
         const updatedCategory = await SubCategoryModal.findByIdAndUpdate(categoryId, updateData, { new: true });
 
+        // If images are uploaded, update the images
         if (req.files && req.files.length > 0) {
             const images = req.files.map(file => ({ img: file.path }));
             subcategory.image.push(...images); // Append new images
+            await subcategory.save();
         }
-
-        await subcategory.save();
 
         res.status(200).send({ status: "OK", message: "Data Updated Successfully", data: updatedCategory, error: 0 });
     } catch (error) {
@@ -102,6 +109,17 @@ exports.updateSubCategory = async (req, res) => {
     }
 };
 
+// Function to generate a unique slug
+async function generateUniqueSlug(instance, baseSlug, counter = 1) {
+    const newSlug = `${baseSlug}-${counter}`;
+    const existing = await mongoose.models.SubCategory.findOne({ url: newSlug });
+
+    if (existing) {
+        return generateUniqueSlug(instance, baseSlug, counter + 1);
+    }
+
+    return newSlug;
+}
 
 
 
