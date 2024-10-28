@@ -1,6 +1,6 @@
 const express = require("express");
 const { storeCat, getAllCategory, deleteCategory, updateCategory } = require("../controller/Categories");
-const { substore, getallsubcat, deletesubcat, updateSubCategory, getbycategory, getAllCategoriesWithSubcategories, deleteImageFromSubCategory, deleteImagesubsubCategory } = require("../controller/SubCategory");
+const { substore, getallsubcat, deletesubcat, updateSubCategory, getbycategory, getAllCategoriesWithSubcategories, deleteImageFromSubCategory, deleteImagesubsubCategory, getbycategoryurl } = require("../controller/SubCategory");
 
 const upload = require('../Config/Multerconfig');
 const { PostRegister, getallRegister, putRegister, deleteRegister, getbyUser } = require("../Auth/RegisterController");
@@ -39,6 +39,8 @@ router.post("/subcategory", verifyToken, adminAuth, upload.array("image", 5), su
 router.get("/subcategory", getallsubcat);
 
 router.get("/subcategory/:id", getbycategory);
+router.get("/subcategoryurl/:url", getbycategoryurl);
+
 
 router.get('/category_with_subcategory', getAllCategoriesWithSubcategories);
 
