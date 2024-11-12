@@ -10,6 +10,7 @@ const StoreSchema = new mongoose.Schema({
     description: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Description' }],
     state: { type: String },
     city: { type: String },
+    sector: { type: String },
     product: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
     url: {
         type: String,

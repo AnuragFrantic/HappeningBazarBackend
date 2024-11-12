@@ -54,14 +54,14 @@ exports.getbycategory = async (req, res) => {
 
 exports.getbycategoryurl = async (req, res) => {
     const url = req.params.url;
-    console.log(url);
+    
 
     try {
         const data = await SubCategoryModal.find()
             .populate({
                 path: 'category',
                 match: { url: url }
-            });
+            });   
 
         // Filter out documents where `category` is null (no match found)
         const filteredData = data.filter(subcategory => subcategory.category);

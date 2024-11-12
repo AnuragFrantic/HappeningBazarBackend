@@ -19,28 +19,44 @@ exports.createoffer = async (req, res) => {
     }
 };
 
-// Fetch all offers with optional filtering by state and city
 exports.getalloffer = async (req, res) => {
     try {
         const { state, city } = req.query;
 
-        // Build a filter object
-        const filter = {};
-        if (state) filter.state = state;
-        if (city) filter.city = city;
+
+
+
+        const filter = {
+            alluser: true,  // Only offers for all users
+            expiry_date: { $gte: new Date() },  // Check for non-expired offers
+            ...(state && { state }),  // Optional: filter by state if provided
+            ...(city && { city })  // Optional: filter by city if provided
+        };
+
+
 
         // Fetch offers based on the filter
         const data = await Offer.find(filter).populate({
             path: 'generated_codes.user',
             select: 'name email'
-        })
+        });
+
+        console.log("Data length:", data.length);  // Log length of returned data
+
+        if (data.length === 0) {
+            console.log("No offers found matching the filter.");
+        }
 
         res.status(200).json({ status: "OK", message: "Offers fetched successfully", error: "0", data });
     } catch (error) {
-        console.error(error);
+        console.error("Error:", error);  // Log any errors for easier debugging
         res.status(500).json({ status: "FAILED", message: "Error fetching offers", error: "1" });
     }
 };
+
+
+
+
 
 // Update an existing offer
 exports.putoffer = async (req, res) => {

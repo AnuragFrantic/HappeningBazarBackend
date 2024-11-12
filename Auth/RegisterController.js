@@ -86,6 +86,7 @@ exports.PostRegister = async (req, res) => {
 
         // Check if the phone number is already registered
         let existingPhoneUser = await Register.findOne({ phone: req.body.mobile });
+
         if (existingPhoneUser) {
             return res.status(400).json({
                 error: "1",

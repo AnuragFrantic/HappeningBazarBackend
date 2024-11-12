@@ -29,6 +29,7 @@ const OfferSchema = new mongoose.Schema({
     expiry_date: { type: Date },
     state: { type: String },
     city: { type: String },
+    sector:  {type : String},
     is_active: { type: Boolean, default: true },
     is_deleted: { type: Boolean, default: false },
     url: {
