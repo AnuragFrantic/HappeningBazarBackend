@@ -1,9 +1,8 @@
+const mongoose = require("mongoose")
 
-const mongoose = require('mongoose');
-const { default: slugify } = require('slugify');
+
 
 const OfferSchema = new mongoose.Schema({
-    // Existing fields
     name: { type: String, required: true },
     description: { type: String, required: true },
     deleted_price: { type: Number },
@@ -20,6 +19,7 @@ const OfferSchema = new mongoose.Schema({
     offer_terms: { type: String },
     created_by: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     store: { type: mongoose.Schema.Types.ObjectId, ref: "Store" },
+    category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
     discount_amount: { type: Number },
     discount_percentage: { type: String },
     minimum_purchase: { type: Number },
@@ -29,7 +29,7 @@ const OfferSchema = new mongoose.Schema({
     expiry_date: { type: Date },
     state: { type: String },
     city: { type: String },
-    sector:  {type : String},
+    sector: { type: String },
     is_active: { type: Boolean, default: true },
     is_deleted: { type: Boolean, default: false },
     url: {
@@ -37,23 +37,12 @@ const OfferSchema = new mongoose.Schema({
         unique: true,
         required: true
     },
-    // New fields for tracking codes
-    generated_codes: [
-        {
-            code: { type: String, sparse: true },
-            user: { type: mongoose.Schema.Types.ObjectId, ref: "Register" },
-            vendor: { type: mongoose.Schema.Types.ObjectId, ref: "Register" },
-            valid_until: { type: Date },
-            status: { type: String, enum: ["active", "used", "expired"], default: "active" }
-        }
-    ]
+    generated_codes: [{ type: mongoose.Schema.Types.ObjectId, ref: "GeneratedCode" }] // Reference to GeneratedCode
 }, { timestamps: true });
 
-
-
+// Slug generation and middleware remain the same
 OfferSchema.pre('save', function (next) {
     if (this.isNew) {
-        // If generated_codes is not provided, initialize it to an empty array
         if (!this.generated_codes) {
             this.generated_codes = [];
         }
@@ -61,19 +50,6 @@ OfferSchema.pre('save', function (next) {
     next();
 });
 
-async function generateUniqueSlug(instance, baseSlug, counter = 1) {
-    const newSlug = `${baseSlug}-${counter}`;
-
-    const existing = await mongoose.models.Offer.findOne({ url: newSlug });
-
-    if (existing) {
-        return generateUniqueSlug(instance, baseSlug, counter + 1);
-    }
-
-    return newSlug;
-}
-
-// Middleware to generate slug before saving
 OfferSchema.pre('validate', async function (next) {
     if (this.name) {
         let baseSlug = slugify(this.name, { lower: true, remove: /[*+~.()'"!:@/]/g });
@@ -90,4 +66,3 @@ OfferSchema.pre('validate', async function (next) {
 });
 
 module.exports = mongoose.model('Offer', OfferSchema);
-

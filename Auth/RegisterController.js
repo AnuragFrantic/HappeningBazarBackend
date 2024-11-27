@@ -23,7 +23,7 @@ const secretKey = "Secretkey";
 
 //         // Check if email is provided
 //         if (!req.body.email) {
-//             return res.status(400).json({ error: "1", message: "Email is required" });
+//             return res.status(200).json({ error: "1", message: "Email is required" });
 //         }
 
 //         // Attach uploaded image path if available
@@ -53,7 +53,7 @@ const secretKey = "Secretkey";
 //                 errorDetails.push({ field: "password", message: "Password is required" });
 //             }
 
-//             return res.status(400).json({ error: "1", message: "Please fill out the form properly.", details: errorDetails });
+//             return res.status(200).json({ error: "1", message: "Please fill out the form properly.", details: errorDetails });
 
 //         }
 
@@ -73,22 +73,25 @@ const secretKey = "Secretkey";
 // };
 
 exports.PostRegister = async (req, res) => {
+
     try {
-        // Check if the email is already registered
+
         let existingUser = await Register.findOne({ email: req.body.email });
+        console.log(existingUser)
         if (existingUser) {
-            return res.status(400).json({
+            return res.status(200).json({
                 error: "1",
                 message: "Email already exists",
                 details: [{ field: "email", message: "Email already exists" }]
             });
+
         }
 
         // Check if the phone number is already registered
         let existingPhoneUser = await Register.findOne({ phone: req.body.mobile });
-
+        console.log(existingPhoneUser)
         if (existingPhoneUser) {
-            return res.status(400).json({
+            return res.status(200).json({
                 error: "1",
                 message: "Phone number already exists",
                 details: [{ field: "phone", message: "Phone number already exists" }]
@@ -100,11 +103,13 @@ exports.PostRegister = async (req, res) => {
 
         // Check if email is provided
         if (!req.body.email) {
-            return res.status(400).json({
+            return res.status(200).json({
                 error: "1",
                 message: "Email is required"
             });
         }
+
+
 
         // Attach uploaded image path if available
         if (req.file) {
@@ -134,7 +139,7 @@ exports.PostRegister = async (req, res) => {
                 errorDetails.push({ field: "password", message: "Password is required" });
             }
 
-            return res.status(400).json({
+            return res.status(200).json({
                 error: "1",
                 message: "Please fill out the form properly.",
                 details: errorDetails

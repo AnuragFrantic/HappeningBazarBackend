@@ -12,7 +12,7 @@ const { createdescription, getalldescription, deletedesc, updatedescription, del
 const { createitem, getallitem, getuserProduct, deleteitem, updateitem, getProductByUrl, getStoreurlbyproduct, findProductByUrl } = require("../controller/ProductController");
 const { createContact, getContact } = require("../controller/ContactController");
 const { reportraise, getAllreport, getuserreport } = require("../controller/ReportController");
-const { createoffer, getalloffer, putoffer, deleteoffer, getOfferByUrl, getuseroffer, generateOfferCode } = require("../controller/OfferController");
+
 const { createEvent, getallevent, deleteevent, updateevent, eventbyurl } = require("../controller/EventController");
 const { createStore, getAllStores, updateStore, deleteStore, getvendorstore, getstores_by_Subcategory_url } = require("../controller/CreateController");
 const { createmembership, getallmembership, getmembershipbyid, updatemembership, deletemembership } = require("../controller/MembershipController");
@@ -20,6 +20,8 @@ const { createRegistration, getAllRegistrations, getRegistrationById, deleteRegi
 const { getAllStates, getStateByIsoCode } = require("../controller/StateController");
 const { storeBlog, getAllBlogs, updateBlog, deleteBlog, blogsbyurl } = require("../controller/BlogController");
 const { validateOfferCode } = require("../controller/AppliedOffercontoller");
+const { createOffer, getAllOffers, deleteOffer, getUserOffers, getOfferByUrl, updateOffer } = require("../controller/OfferController");
+const { generateOfferCode } = require("../controller/OfferCodeContoller");
 
 
 const router = express.Router();
@@ -142,11 +144,11 @@ router.get('/userreport', getuserreport)
 
 //offer
 
-router.post('/offer', upload.single("image"), createoffer)
-router.get('/offer', getalloffer)
-router.put('/offer', upload.single("image"), putoffer)
-router.delete('/offer', deleteoffer)
-router.get('/getuseroffer', getuseroffer)
+router.post('/offer', upload.single("image"), createOffer)
+router.get('/offer', getAllOffers)
+router.put('/offer', upload.single("image"), updateOffer)
+router.delete('/offer', deleteOffer)
+router.get('/getuseroffer', getUserOffers)
 
 router.get('/getoffer/:url', getOfferByUrl)
 

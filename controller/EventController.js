@@ -96,7 +96,7 @@ exports.updateevent = async (req, res) => {
 
 
     if (!id) {
-        return res.status(400).send({ message: 'User ID is required' });
+        return res.status(200).send({ message: 'User ID is required' });
     }
 
     try {

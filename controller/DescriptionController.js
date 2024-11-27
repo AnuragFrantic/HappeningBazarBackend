@@ -39,7 +39,7 @@ exports.createdescription = async (req, res) => {
         const store = await StoreModal.findById(req.body.store);
 
         if (!user) {
-            return res.status(400).send({ "status": "Failed", "message": "User not found", error: "1" });
+            return res.status(200).send({ "status": "Failed", "message": "User not found", error: "1" });
         }
 
         if (user.status === "cancelled" || user.status === "pending") {
