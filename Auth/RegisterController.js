@@ -77,7 +77,7 @@ exports.PostRegister = async (req, res) => {
     try {
 
         let existingUser = await Register.findOne({ email: req.body.email });
-        console.log(existingUser)
+        // console.log(existingUser)
         if (existingUser) {
             return res.status(200).json({
                 error: "1",
@@ -89,7 +89,7 @@ exports.PostRegister = async (req, res) => {
 
         // Check if the phone number is already registered
         let existingPhoneUser = await Register.findOne({ phone: req.body.mobile });
-        console.log(existingPhoneUser)
+        // console.log(existingPhoneUser)
         if (existingPhoneUser) {
             return res.status(200).json({
                 error: "1",
@@ -232,7 +232,7 @@ exports.deleteRegister = async (req, res) => {
 exports.getbyUser = async (req, res) => {
     try {
         const { type } = req.params
-        console.log(type)
+
     } catch (error) {
         console.error("Error in getting profile:", error);
         res.status(500).json({ error: "Internal server error" });

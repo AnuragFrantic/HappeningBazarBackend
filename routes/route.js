@@ -28,10 +28,16 @@ const router = express.Router();
 
 //category api
 
-router.post("/category", verifyToken, adminAuth, upload.single("image"), storeCat);
+router.post("/category", verifyToken, adminAuth, upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'icon', maxCount: 1 }
+]), storeCat);
 router.get("/category", getAllCategory);
 
-router.put("/category/:id", upload.single("image"), verifyToken, adminAuth, updateCategory);
+router.put("/category/:id", upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'icon', maxCount: 1 }
+]), verifyToken, adminAuth, updateCategory);
 
 router.delete("/deletecategory/:id", verifyToken, adminAuth, deleteCategory);
 

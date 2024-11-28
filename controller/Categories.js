@@ -6,8 +6,13 @@ const { findByIdAndDelete } = require("../model/SubCategoryModal")
 exports.storeCat = async (req, res) => {
     try {
         const create = new CategoriesModal(req.body)
-        if (req.file) {
-            create.image = req.file.path
+        if (req.files) {
+            if (req.files.image) {
+                data.image = req.files.image[0].path;
+            }
+            if (req.files.icon) {
+                data.icon = req.files.icon[0].path;
+            }
         }
         await create.save()
         res.status(200).send({ "status": "OK", "message": "Data Created Successfully", error: 0 })
@@ -34,12 +39,16 @@ exports.updateCategory = async (req, res) => {
         const categoryId = req.params.id;
         const updateData = req.body;
 
-        // If a file is uploaded, set the image path
-        if (req.file) {
-            updateData.image = req.file.path;
+        if (req.files) {
+            if (req.files.image) {
+                data.image = req.files.image[0].path;
+            }
+            if (req.files.icon) {
+                data.icon = req.files.icon[0].path;
+            }
         }
 
-        console.log(updateData)
+
 
         // Find the category by ID and update it with the new data
         const updatedCategory = await CategoriesModal.findByIdAndUpdate(categoryId, updateData, { new: true });

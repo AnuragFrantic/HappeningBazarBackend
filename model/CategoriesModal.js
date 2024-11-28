@@ -18,6 +18,7 @@ const CategoriesSchema = new mongoose.Schema({
     name: { type: String, required: true },
     description: { type: String },
     image: { type: String },
+    icon: { type: String },
     position: { type: String },
     url: { type: String, unique: true } // Ensure URL is unique
 }, {

@@ -19,28 +19,67 @@ exports.createOffer = async (req, res) => {
 };
 
 // Get all offers
+
 exports.getAllOffers = async (req, res) => {
     try {
-        const { state, city } = req.query;
+        const { state, city, alluser } = req.query;
 
+        // Construct the filter based on the value of alluser
         const filter = {
-            alluser: true,
-            expiry_date: { $gte: new Date() },
-            ...(state && { state }),
-            ...(city && { city }),
+            expiry_date: { $gte: new Date() }, // Always filter by non-expired offers
         };
 
-        const data = await Offer.find(filter).populate({
-            path: 'generated_codes.user',
-            select: 'name email',
-        });
+        // Add the conditions for `alluser` based on its value
+        if (alluser === 'alluser') {
+            // If `alluser` is 'alluser', show all data regardless of user type
+            filter.alluser = 'alluser';
+        } else if (alluser === 'utsav') {
+            // If `alluser` is 'utsav', show data relevant to 'utsav' users
+            filter.alluser = 'utsav';
+        } else if (alluser === 'all') {
+            // If `alluser` is 'all', show all data
+            // No need to modify filter for this case
+        }
 
-        res.status(200).json({ status: "OK", message: "Offers fetched successfully", error: "0", data });
+        // Add additional filters for state and city if provided
+        if (state) {
+            filter.state = state;
+        }
+        if (city) {
+            filter.city = city;
+        }
+
+        // Find offers based on the constructed filter
+        const data = await Offer.find(filter)
+            .populate({
+                path: 'generated_codes.user',
+                select: 'name email',
+            });
+
+        res.status(200).json({
+            status: "OK",
+            message: "Offers fetched successfully",
+            error: "0",
+            data
+        });
     } catch (error) {
         console.error("Error fetching offers:", error);
-        res.status(500).json({ status: "FAILED", message: "Error fetching offers", error: "1" });
+        res.status(500).json({
+            status: "FAILED",
+            message: "Error fetching offers",
+            error: "1"
+        });
     }
 };
+
+
+
+
+
+
+
+
+
 
 // Update an existing offer
 exports.updateOffer = async (req, res) => {
@@ -99,10 +138,9 @@ exports.getUserOffers = async (req, res) => {
             return res.status(200).json({ status: "FAILED", message: "User ID is required", error: "1" });
         }
 
-        const data = await Offer.find({ created_by: id }).populate({
-            path: 'generated_codes.user',
-            select: 'name email address',
-        });
+        const data = await Offer.find({ created_by: id });
+
+
 
         res.status(200).json({ status: "OK", message: "Offers fetched successfully", error: "0", data });
     } catch (error) {

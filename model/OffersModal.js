@@ -1,4 +1,5 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
+const { default: slugify } = require("slugify");
 
 
 
@@ -7,7 +8,7 @@ const OfferSchema = new mongoose.Schema({
     description: { type: String, required: true },
     deleted_price: { type: Number },
     real_price: { type: Number },
-    membership: { type: mongoose.Schema.Types.ObjectId, ref: "Membership" },
+    membership: { type: String },
     min_off: { type: Number },
     max_off: { type: Number },
     alluser: { type: String },

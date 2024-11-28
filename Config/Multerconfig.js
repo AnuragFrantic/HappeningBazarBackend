@@ -14,18 +14,22 @@ const storage = multer.diskStorage({
 
 // Set up file filter
 const fileFilter = (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
+    if (
+        file.mimetype.startsWith('image/') ||
+        file.mimetype === 'application/pdf' ||
+        file.mimetype === 'video/mp4'
+    ) {
         cb(null, true);
     } else {
-        cb(new Error('Only image files are allowed!'), false);
+        cb(new Error('Only image, PDF, and MP4 files are allowed!'), false);
     }
 };
 
-// Configure multer middleware
+// Configure multer middleware without specifying the fields
 const upload = multer({
     storage: storage,
     limits: {
-        fileSize: 1024 * 1024 * 5 // Limit file size to 5MB
+        fileSize: 1024 * 1024 * 35 // Limit file size to 20MB
     },
     fileFilter: fileFilter
 });
