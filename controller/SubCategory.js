@@ -19,9 +19,9 @@ exports.substore = async (req, res) => {
             image: images
         });
         await subServiceCard.save();
-        res.status(201).json({ status: "OK", message: "Subcategory created successfully", error: "0" });
+        res.status(201).json({ status: "OK", message: "Subcategory created successfully", error: 0 });
     } catch (e) {
-        res.status(500).json({ status: "Failed", message: e.message, error: "1" });
+        res.status(500).json({ status: "Failed", message: e.message, error: 1 });
     }
 };
 

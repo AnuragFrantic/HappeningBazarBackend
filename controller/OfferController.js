@@ -11,10 +11,10 @@ exports.createOffer = async (req, res) => {
         }
 
         await data.save();
-        res.status(201).json({ status: "OK", message: "Offer created successfully", error: "0" });
+        res.status(201).json({ status: "OK", message: "Offer created successfully", error: 0 });
     } catch (error) {
         console.error("Error creating offer:", error);
-        res.status(500).json({ status: "FAILED", message: "Offer not created", error: "1" });
+        res.status(500).json({ status: "FAILED", message: "Offer not created", error: 1 });
     }
 };
 
@@ -22,11 +22,11 @@ exports.createOffer = async (req, res) => {
 
 exports.getAllOffers = async (req, res) => {
     try {
-        const { state, city, alluser } = req.query;
+        const { state, city, alluser, category } = req.query;
 
         // Construct the filter based on the value of alluser
         const filter = {
-            expiry_date: { $gte: new Date() }, // Always filter by non-expired offers
+            expiry_date: { $gte: new Date() },
         };
 
         // Add the conditions for `alluser` based on its value
@@ -49,17 +49,27 @@ exports.getAllOffers = async (req, res) => {
             filter.city = city;
         }
 
+        if (category) {
+            filter.category = category;
+        }
+
         // Find offers based on the constructed filter
         const data = await Offer.find(filter)
-            .populate({
-                path: 'generated_codes.user',
-                select: 'name email',
-            });
+            .populate([
+                {
+                    path: 'generated_codes.user',
+                    select: 'name email',
+                },
+                {
+                    path: 'category',
+                    select: '_id name position url'
+                }
+            ]);
 
         res.status(200).json({
             status: "OK",
             message: "Offers fetched successfully",
-            error: "0",
+            error: 0,
             data
         });
     } catch (error) {
@@ -67,10 +77,12 @@ exports.getAllOffers = async (req, res) => {
         res.status(500).json({
             status: "FAILED",
             message: "Error fetching offers",
-            error: "1"
+            error: 1
         });
     }
 };
+
+
 
 
 
@@ -86,7 +98,7 @@ exports.updateOffer = async (req, res) => {
     const { id, ...updatedData } = req.body;
 
     if (!id) {
-        return res.status(200).json({ status: "FAILED", message: "Offer ID is required", error: "1" });
+        return res.status(200).json({ status: "FAILED", message: "Offer ID is required", error: 1 });
     }
 
     try {
@@ -97,13 +109,13 @@ exports.updateOffer = async (req, res) => {
         const updatedOffer = await Offer.findByIdAndUpdate(id, updatedData, { new: true });
 
         if (!updatedOffer) {
-            return res.status(404).json({ status: "FAILED", message: "Offer not found", error: "1" });
+            return res.status(404).json({ status: "FAILED", message: "Offer not found", error: 1 });
         }
 
-        res.status(200).json({ status: "OK", message: "Offer updated successfully", error: "0", data: updatedOffer });
+        res.status(200).json({ status: "OK", message: "Offer updated successfully", error: 0, data: updatedOffer });
     } catch (error) {
         console.error("Error updating offer:", error);
-        res.status(500).json({ status: "FAILED", message: "Error updating offer", error: "1" });
+        res.status(500).json({ status: "FAILED", message: "Error updating offer", error: 1 });
     }
 };
 
@@ -112,20 +124,20 @@ exports.deleteOffer = async (req, res) => {
     const { id } = req.body;
 
     if (!id) {
-        return res.status(200).json({ status: "FAILED", message: "Offer ID is required", error: "1" });
+        return res.status(200).json({ status: "FAILED", message: "Offer ID is required", error: 1 });
     }
 
     try {
         const deletedOffer = await Offer.findByIdAndDelete(id);
 
         if (!deletedOffer) {
-            return res.status(404).json({ status: "FAILED", message: "Offer not found", error: "1" });
+            return res.status(404).json({ status: "FAILED", message: "Offer not found", error: 1 });
         }
 
-        res.status(200).json({ status: "OK", message: "Offer deleted successfully", error: "0" });
+        res.status(200).json({ status: "OK", message: "Offer deleted successfully", error: 0 });
     } catch (error) {
         console.error("Error deleting offer:", error);
-        res.status(500).json({ status: "FAILED", message: "Error deleting offer", error: "1" });
+        res.status(500).json({ status: "FAILED", message: "Error deleting offer", error: 1 });
     }
 };
 
@@ -135,17 +147,17 @@ exports.getUserOffers = async (req, res) => {
         const { id } = req.query;
 
         if (!id) {
-            return res.status(200).json({ status: "FAILED", message: "User ID is required", error: "1" });
+            return res.status(200).json({ status: "FAILED", message: "User ID is required", error: 1 });
         }
 
-        const data = await Offer.find({ created_by: id });
+        const data = await Offer.find({ created_by: id }).populate("generated_codes");
 
 
 
-        res.status(200).json({ status: "OK", message: "Offers fetched successfully", error: "0", data });
+        res.status(200).json({ status: "OK", message: "Offers fetched successfully", error: 0, data });
     } catch (error) {
         console.error("Error fetching user offers:", error);
-        res.status(500).json({ status: "FAILED", message: "Error fetching offers", error: "1" });
+        res.status(500).json({ status: "FAILED", message: "Error fetching offers", error: 1 });
     }
 };
 
@@ -168,13 +180,13 @@ exports.getOfferByUrl = async (req, res) => {
         ]);
 
         if (!offerData.length) {
-            return res.status(404).json({ status: "FAILED", message: "No Offer found for the given URL", error: "1" });
+            return res.status(404).json({ status: "FAILED", message: "No Offer found for the given URL", error: 1 });
         }
 
-        res.status(200).json({ status: "OK", message: "Offer fetched successfully", error: "0", data: offerData });
+        res.status(200).json({ status: "OK", message: "Offer fetched successfully", error: 0, data: offerData });
     } catch (error) {
         console.error("Error fetching offer by URL:", error);
-        res.status(500).json({ status: "FAILED", message: "Error fetching offer", error: "1" });
+        res.status(500).json({ status: "FAILED", message: "Error fetching offer", error: 1 });
     }
 };
 

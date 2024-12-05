@@ -25,10 +25,10 @@ exports.createitem = async (req, res) => {
         await product.save();
 
         // Send success response
-        res.status(201).json({ status: "OK", message: "Product created successfully", error: "0", data: product });
+        res.status(201).json({ status: "OK", message: "Product created successfully", error: 0, data: product });
     } catch (e) {
         console.error(e); // Log the error for debugging
-        res.status(500).json({ status: "Error", message: "Product not created", error: "1" });
+        res.status(500).json({ status: "Error", message: "Product not created", error: 1 });
     }
 };
 
@@ -42,9 +42,9 @@ exports.getallitem = async (req, res) => {
             path: "store",
             select: "title url"
         })
-        res.status(201).json({ status: "OK", message: "Product fecth successfully", error: "0", data: data });
+        res.status(201).json({ status: "OK", message: "Product fecth successfully", error: 0, data: data });
     } catch (e) {
-        res.status(500).json({ status: "OK", message: "Product Not Found", error: "1" });
+        res.status(500).json({ status: "OK", message: "Product Not Found", error: 1 });
     }
 }
 
@@ -58,7 +58,7 @@ exports.deleteitem = async (req, res) => {
         }
         res.status(200).send({ "status": "OK", "message": "Product deleted successfully", data: data, error: 0 });
     } catch (e) {
-        res.status(500).json({ status: "OK", message: "Product Not Found", error: "1" });
+        res.status(500).json({ status: "OK", message: "Product Not Found", error: 1 });
     }
 }
 
@@ -143,9 +143,9 @@ exports.getuserProduct = async (req, res) => {
     try {
         const { id } = req.query;
         const data = await ProductModal.find({ 'created_by': id })
-        res.status(201).json({ status: "OK", message: "Product fecth successfully", error: "0", data: data });
+        res.status(201).json({ status: "OK", message: "Product fecth successfully", error: 0, data: data });
     } catch (err) {
-        res.status(500).json({ status: "OK", message: "Product Not Found", error: "1" })
+        res.status(500).json({ status: "OK", message: "Product Not Found", error: 1 })
     }
 }
 
@@ -220,13 +220,13 @@ exports.findProductByUrl = async (req, res) => {
         });
 
         if (!product) {
-            return res.status(404).json({ status: "Error", message: "Product not found", error: "1" });
+            return res.status(404).json({ status: "Error", message: "Product not found", error: 1 });
         }
 
-        res.status(200).json({ status: "OK", message: "Product fetched successfully", error: "0", data: product });
+        res.status(200).json({ status: "OK", message: "Product fetched successfully", error: 0, data: product });
     } catch (e) {
         console.error(e); // Log the error for debugging
-        res.status(500).json({ status: "Error", message: "Internal Server Error", error: "1" });
+        res.status(500).json({ status: "Error", message: "Internal Server Error", error: 1 });
     }
 };
 

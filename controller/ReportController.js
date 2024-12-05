@@ -7,12 +7,12 @@ exports.reportraise = async (req, res) => {
         if (data) {
             let create = await reportmodal(req.body)
             await create.save()
-            res.status(201).json({ status: "OK", message: "Report Raised successfully", error: "0" });
+            res.status(201).json({ status: "OK", message: "Report Raised successfully", error: 0 });
         } else {
-            res.status(500).json({ status: "OK", message: "Venodr Not Found", error: "0" });
+            res.status(500).json({ status: "OK", message: "Venodr Not Found", error: 0 });
         }
     } catch (err) {
-        res.status(500).json({ status: "OK", message: "Venodr Not Found", error: "0" });
+        res.status(500).json({ status: "OK", message: "Venodr Not Found", error: 0 });
     }
 }
 
@@ -23,9 +23,9 @@ exports.getAllreport = async (req, res) => {
             path: "user",
             select: "_id name"
         })
-        res.status(201).json({ status: "OK", message: "Report Fetched successfully", error: "0", data });
+        res.status(201).json({ status: "OK", message: "Report Fetched successfully", error: 0, data });
     } catch (err) {
-        res.status(500).json({ status: "OK", message: "Report Not Found", error: "0" });
+        res.status(500).json({ status: "OK", message: "Report Not Found", error: 0 });
     }
 }
 
@@ -37,8 +37,8 @@ exports.getuserreport = async (req, res) => {
             path: "user",
             select: "_id name"
         })
-        res.status(201).json({ status: "OK", message: "Report Fetched successfully", error: "0", data });
+        res.status(201).json({ status: "OK", message: "Report Fetched successfully", error: 0, data });
     } catch (err) {
-        res.status(500).json({ status: "OK", message: "Report Not Found", error: "0" });
+        res.status(500).json({ status: "OK", message: "Report Not Found", error: 0 });
     }
 }

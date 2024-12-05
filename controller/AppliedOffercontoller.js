@@ -10,7 +10,7 @@ exports.validateOfferCode = async (req, res) => {
             return res.status(200).json({
                 status: "FAILED",
                 message: "Offer code and vendor ID are required",
-                error: "1",
+                error: 1,
             });
         }
 
@@ -21,7 +21,7 @@ exports.validateOfferCode = async (req, res) => {
             return res.status(404).json({
                 status: "FAILED",
                 message: "Invalid offer code",
-                error: "1",
+                error: 1,
             });
         }
 
@@ -33,7 +33,7 @@ exports.validateOfferCode = async (req, res) => {
             return res.status(200).json({
                 status: "FAILED",
                 message: "Offer code is expired, inactive, or already used",
-                error: "1",
+                error: 1,
             });
         }
 
@@ -56,14 +56,14 @@ exports.validateOfferCode = async (req, res) => {
         res.status(200).json({
             status: "OK",
             message: "Offer code applied successfully",
-            error: "0",
+            error: 0,
         });
     } catch (error) {
         console.error("Error validating offer code:", error);
         res.status(500).json({
             status: "FAILED",
             message: "Internal server error",
-            error: "1",
+            error: 1,
         });
     }
 };

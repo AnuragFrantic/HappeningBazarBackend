@@ -49,7 +49,7 @@ exports.getProfile = async (req, res) => {
         }
 
         // Respond with user profile data
-        res.status(200).json({ message: "Profile Fetch Successfull", data: userData, error: "0" });
+        res.status(200).json({ message: "Profile Fetch Successfull", data: userData, error: 0 });
     } catch (error) {
         console.error("Error in getting profile:", error);
         res.status(500).json({ error: "Internal server error", error: '1' });

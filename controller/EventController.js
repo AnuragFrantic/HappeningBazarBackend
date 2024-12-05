@@ -20,10 +20,10 @@ exports.createEvent = async (req, res) => {
         user.events.push(newEvent._id); // Assuming user.events is an array of event IDs
         await user.save();
 
-        res.status(201).json({ status: "OK", message: "Event Created Successfully", error: "0" });
+        res.status(201).json({ status: "OK", message: "Event Created Successfully", error: 0 });
     } catch (err) {
         console.error('Error creating event:', err);
-        res.status(500).json({ status: "ERROR", message: "Event Not Created", error: "1" });
+        res.status(500).json({ status: "ERROR", message: "Event Not Created", error: 1 });
     }
 };
 
@@ -32,9 +32,9 @@ exports.createEvent = async (req, res) => {
 //     try {
 //         const data = await eventmodal.find()
 
-//         res.status(201).json({ status: "OK", message: "Event fetch Succesfully", error: "0", data });
+//         res.status(201).json({ status: "OK", message: "Event fetch Succesfully", error: 0, data });
 //     } catch (err) {
-//         res.status(500).json({ status: "OK", message: "Event Not Found", error: "1" });
+//         res.status(500).json({ status: "OK", message: "Event Not Found", error: 1 });
 //     }
 // }
 
@@ -58,10 +58,10 @@ exports.getallevent = async (req, res) => {
         // Fetch events based on the filter
         const data = await eventmodal.find(filter);
 
-        res.status(201).json({ status: "OK", message: "Event fetched successfully", error: "0", data });
+        res.status(201).json({ status: "OK", message: "Event fetched successfully", error: 0, data });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ status: "ERROR", message: "Event not found", error: "1" });
+        res.status(500).json({ status: "ERROR", message: "Event not found", error: 1 });
     }
 };
 
@@ -73,9 +73,9 @@ exports.deleteevent = async (req, res) => {
     try {
         const data = await eventmodal.findByIdAndDelete(id)
 
-        res.status(201).json({ status: "OK", message: "Event Delete Succesfully", error: "0", data });
+        res.status(201).json({ status: "OK", message: "Event Delete Succesfully", error: 0, data });
     } catch (err) {
-        res.status(500).json({ status: "OK", message: "Event Not deleted", error: "1" });
+        res.status(500).json({ status: "OK", message: "Event Not deleted", error: 1 });
     }
 }
 
@@ -106,14 +106,14 @@ exports.updateevent = async (req, res) => {
         }
 
         if (!updateEvent) {
-            return res.status(500).send({ message: 'Event not found', error: "1" });
+            return res.status(500).send({ message: 'Event not found', error: 1 });
         }
 
-        res.status(200).json({ status: "OK", message: "Event  Updated Successfully", error: "0", updateEvent });
+        res.status(200).json({ status: "OK", message: "Event  Updated Successfully", error: 0, updateEvent });
     } catch (error) {
         console.error(error);
 
-        res.status(500).json({ status: "OK", message: "An error occurred while updating the user", error: "1" });
+        res.status(500).json({ status: "OK", message: "An error occurred while updating the user", error: 1 });
     }
 };
 

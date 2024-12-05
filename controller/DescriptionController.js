@@ -8,9 +8,9 @@ const StoreModal = require("../model/CreateStore")
 //         const user = await UserModal.findById({ "_id": req.body.created_by });
 //         const store = await StoreModal.findById({ "_id": req.body.store });
 //         if (user.status == "cancelled" || user.status == "pending") {
-//             res.status(200).send({ "status": "Failed", "message": `Your application is ${user.status}, which is why you cannot upload products.`, error: "1" });
+//             res.status(200).send({ "status": "Failed", "message": `Your application is ${user.status}, which is why you cannot upload products.`, error: 1 });
 //         } else if (!store) {
-//             res.status(200).send({ "status": "Failed", "message": `Store Not Found`, error: "1" });
+//             res.status(200).send({ "status": "Failed", "message": `Store Not Found`, error: 1 });
 //         } else {
 //             const images = req.files.map(file => ({ img: file.path }));
 
@@ -29,7 +29,7 @@ const StoreModal = require("../model/CreateStore")
 //         }
 
 //     } catch (e) {
-//         res.status(500).send({ "status": "Failed", "message": e.message, error: "1" });
+//         res.status(500).send({ "status": "Failed", "message": e.message, error: 1 });
 //     }
 // }
 
@@ -39,22 +39,22 @@ exports.createdescription = async (req, res) => {
         const store = await StoreModal.findById(req.body.store);
 
         if (!user) {
-            return res.status(200).send({ "status": "Failed", "message": "User not found", error: "1" });
+            return res.status(200).send({ "status": "Failed", "message": "User not found", error: 1 });
         }
 
         if (user.status === "cancelled" || user.status === "pending") {
-            return res.status(200).send({ "status": "Failed", "message": `Your application is ${user.status}, which is why you cannot upload products.`, error: "1" });
+            return res.status(200).send({ "status": "Failed", "message": `Your application is ${user.status}, which is why you cannot upload products.`, error: 1 });
         }
 
         if (!store) {
-            return res.status(200).send({ "status": "Failed", "message": "Store not found", error: "1" });
+            return res.status(200).send({ "status": "Failed", "message": "Store not found", error: 1 });
         }
 
         // Check if the store already has an assigned description
         const existingDescription = await DescriptionModal.findOne({ store: store });
 
         if (existingDescription) {
-            return res.status(200).send({ "status": "Failed", "message": "This store already has an assigned description", error: "1" });
+            return res.status(200).send({ "status": "Failed", "message": "This store already has an assigned description", error: 1 });
         }
 
         // Create new description
@@ -74,7 +74,7 @@ exports.createdescription = async (req, res) => {
         res.status(200).send({ "status": "OK", "message": "Description Created Successfully", error: 0, data: newDescription });
 
     } catch (e) {
-        res.status(500).send({ "status": "Failed", "message": e.message, error: "1" });
+        res.status(500).send({ "status": "Failed", "message": e.message, error: 1 });
     }
 };
 

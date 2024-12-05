@@ -22,6 +22,7 @@ const { storeBlog, getAllBlogs, updateBlog, deleteBlog, blogsbyurl } = require("
 const { validateOfferCode } = require("../controller/AppliedOffercontoller");
 const { createOffer, getAllOffers, deleteOffer, getUserOffers, getOfferByUrl, updateOffer } = require("../controller/OfferController");
 const { generateOfferCode } = require("../controller/OfferCodeContoller");
+const { createFAQ, getAllFAQs, getFAQById, updateFAQ, deleteFAQ } = require("../controller/FaqController");
 
 
 const router = express.Router();
@@ -241,5 +242,14 @@ router.put("/blogs/:id", upload.single("image"), updateBlog);
 // Delete a blog
 router.delete("/blogs/:id", deleteBlog);
 router.get('/blogs/:url', blogsbyurl)
+
+
+
+
+router.post('/faqs', createFAQ);
+router.get('/faqs', getAllFAQs);
+router.get('/faqs/:id', getFAQById);
+router.put('/faqs/:id', updateFAQ);
+router.delete('/faqs/:id', deleteFAQ);
 
 module.exports = router;

@@ -11,7 +11,7 @@ exports.createBanner = (req, res) => {
         newBanner.save()
         res.status(200).send({ "status": "OK", "message": "Banner Created Successfully", error: 0 })
     } catch (e) {
-        res.status(500).send({ "status": "Failed", "message": e.message, error: "1" })
+        res.status(500).send({ "status": "Failed", "message": e.message, error: 1 })
     }
 };
 

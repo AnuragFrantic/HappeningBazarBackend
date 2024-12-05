@@ -15,7 +15,7 @@ const secretKey = "Secretkey";
 
 //         let existingUser = await Register.findOne({ email: req.body.email });
 //         if (existingUser) {
-//             return res.status(500).json({ error: "1", message: "Email already exists", details: [{ field: "email", message: "Email already exists" }] });
+//             return res.status(500).json({ error: 1, message: "Email already exists", details: [{ field: "email", message: "Email already exists" }] });
 //         }
 
 //         // Create a new instance of the Register model with request body
@@ -23,7 +23,7 @@ const secretKey = "Secretkey";
 
 //         // Check if email is provided
 //         if (!req.body.email) {
-//             return res.status(200).json({ error: "1", message: "Email is required" });
+//             return res.status(200).json({ error: 1, message: "Email is required" });
 //         }
 
 //         // Attach uploaded image path if available
@@ -53,7 +53,7 @@ const secretKey = "Secretkey";
 //                 errorDetails.push({ field: "password", message: "Password is required" });
 //             }
 
-//             return res.status(200).json({ error: "1", message: "Please fill out the form properly.", details: errorDetails });
+//             return res.status(200).json({ error: 1, message: "Please fill out the form properly.", details: errorDetails });
 
 //         }
 
@@ -65,10 +65,10 @@ const secretKey = "Secretkey";
 //         // const message_user = mailtouser({ name: registerBody.name });
 //         // send_email(registerBody.email, 'Account created on Happening Bazar', message_user);
 
-//         res.status(201).json({ error: "0", message: "User created successfully" });
+//         res.status(201).json({ error: 0, message: "User created successfully" });
 //     } catch (error) {
 //         console.error(error);
-//         res.status(500).json({ error: "1", message: "Internal server error" });
+//         res.status(500).json({ error: 1, message: "Internal server error" });
 //     }
 // };
 
@@ -80,7 +80,7 @@ exports.PostRegister = async (req, res) => {
         // console.log(existingUser)
         if (existingUser) {
             return res.status(200).json({
-                error: "1",
+                error: 1,
                 message: "Email already exists",
                 details: [{ field: "email", message: "Email already exists" }]
             });
@@ -92,7 +92,7 @@ exports.PostRegister = async (req, res) => {
         // console.log(existingPhoneUser)
         if (existingPhoneUser) {
             return res.status(200).json({
-                error: "1",
+                error: 1,
                 message: "Phone number already exists",
                 details: [{ field: "phone", message: "Phone number already exists" }]
             });
@@ -104,7 +104,7 @@ exports.PostRegister = async (req, res) => {
         // Check if email is provided
         if (!req.body.email) {
             return res.status(200).json({
-                error: "1",
+                error: 1,
                 message: "Email is required"
             });
         }
@@ -140,7 +140,7 @@ exports.PostRegister = async (req, res) => {
             }
 
             return res.status(200).json({
-                error: "1",
+                error: 1,
                 message: "Please fill out the form properly.",
                 details: errorDetails
             });
@@ -155,10 +155,10 @@ exports.PostRegister = async (req, res) => {
         // const message_user = mailtouser({ name: registerBody.name });
         // send_email(registerBody.email, 'Account created on Happening Bazar', message_user);
 
-        res.status(201).json({ error: "0", message: "User created successfully" });
+        res.status(201).json({ error: 0, message: "User created successfully" });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "1", message: "Internal server error" });
+        res.status(500).json({ error: 1, message: "Internal server error" });
     }
 };
 
@@ -200,10 +200,10 @@ exports.putRegister = async (req, res) => {
             return res.status(500).json({ message: "User not found!" });
         }
 
-        res.status(200).json({ message: "Data Update Succesfully", error: "0" });
+        res.status(200).json({ message: "Data Update Succesfully", error: 0 });
     } catch (error) {
         console.error("Error in updating the user:", error);
-        res.status(500).json({ error: "1", message: "Internal server error" });
+        res.status(500).json({ error: 1, message: "Internal server error" });
     }
 };
 
@@ -221,7 +221,7 @@ exports.deleteRegister = async (req, res) => {
         res.status(200).json({ message: "Deleted Successfully!" });
     } catch (err) {
         console.error("Error in updating the user:", err);
-        res.status(500).json({ error: "0" });
+        res.status(500).json({ error: 0 });
     }
 }
 

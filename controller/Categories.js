@@ -6,6 +6,7 @@ const { findByIdAndDelete } = require("../model/SubCategoryModal")
 exports.storeCat = async (req, res) => {
     try {
         const create = new CategoriesModal(req.body)
+
         if (req.files) {
             if (req.files.image) {
                 data.image = req.files.image[0].path;
@@ -39,22 +40,23 @@ exports.updateCategory = async (req, res) => {
         const categoryId = req.params.id;
         const updateData = req.body;
 
+        // Check if files are included in the request
         if (req.files) {
             if (req.files.image) {
-                data.image = req.files.image[0].path;
+                // Update the image path in the updateData object
+                updateData.image = req.files.image[0].path;
             }
             if (req.files.icon) {
-                data.icon = req.files.icon[0].path;
+                // Update the icon path in the updateData object
+                updateData.icon = req.files.icon[0].path;
             }
         }
-
-
 
         // Find the category by ID and update it with the new data
         const updatedCategory = await CategoriesModal.findByIdAndUpdate(categoryId, updateData, { new: true });
 
         if (!updatedCategory) {
-            return res.status(500).send({ status: "Failed", message: "Category not found", error: 1 });
+            return res.status(404).send({ status: "Failed", message: "Category not found", error: 1 });
         }
 
         res.status(200).send({ status: "OK", message: "Category Updated Successfully", error: 0, data: updatedCategory });
@@ -62,6 +64,7 @@ exports.updateCategory = async (req, res) => {
         res.status(500).send({ status: "Failed", message: e.message, error: 1 });
     }
 };
+
 
 
 
