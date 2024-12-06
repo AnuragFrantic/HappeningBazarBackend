@@ -23,6 +23,10 @@ const { validateOfferCode } = require("../controller/AppliedOffercontoller");
 const { createOffer, getAllOffers, deleteOffer, getUserOffers, getOfferByUrl, updateOffer } = require("../controller/OfferController");
 const { generateOfferCode } = require("../controller/OfferCodeContoller");
 const { createFAQ, getAllFAQs, getFAQById, updateFAQ, deleteFAQ } = require("../controller/FaqController");
+const { createLead, getAllLeads, getLeadById, updateLead, deleteLead } = require("../controller/LeadController");
+const { createReview, getAllReviews, getReviewsByStore, updateReview, deleteReview } = require("../controller/ReviewController");
+const { createOrUpdatePolicy, getPolicies, getPolicyByUrl, deletePolicy } = require("../controller/PolicyController");
+const authenticateToken = require("../middleware/AuthicateToken");
 
 
 const router = express.Router();
@@ -251,5 +255,42 @@ router.get('/faqs', getAllFAQs);
 router.get('/faqs/:id', getFAQById);
 router.put('/faqs/:id', updateFAQ);
 router.delete('/faqs/:id', deleteFAQ);
+
+
+//lead
+
+
+router.post("/leads", createLead);
+router.get("/leads", getAllLeads);
+router.get("/leads/:id", getLeadById);
+router.put("/leads/:id", updateLead);
+router.delete("/leads/:id", deleteLead);
+
+
+//reveiw 
+
+
+router.post("/reviews", authenticateToken, createReview);
+router.get("/reviews", getAllReviews);
+router.get("/reviews/store/:storeurl", getReviewsByStore);
+router.put("/reviews/:id", authenticateToken, updateReview);
+router.delete("/reviews/:id", authenticateToken, deleteReview);
+
+
+
+
+//policy
+
+
+router.post('/policy', createOrUpdatePolicy);
+
+// Route to get all policies
+router.get('/policy', getPolicies);
+
+// Route to get a single policy by URL
+router.get('/policy/:url', getPolicyByUrl);
+
+// Route to delete a policy by URL
+router.delete('/policy/:url', deletePolicy);
 
 module.exports = router;

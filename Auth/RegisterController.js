@@ -3,7 +3,6 @@ const { send_email } = require("../middleware/SendEmail");
 const Register = require("../model/Register");
 const jwt = require("jsonwebtoken")
 
-const secretKey = "Secretkey";
 
 
 
