@@ -10,6 +10,11 @@ const cors = require("cors")
 
 const mainroutes = require('./routes/route')
 
+const fs = require("fs");
+const https = require("https");
+const http = require("http");
+const path = require('path')
+
 
 const app = express();
 
@@ -46,7 +51,22 @@ const connect = async () => {
 
 
 
-app.listen(port, () => {
-    connect()
-    console.log('Server is up on port ' + port)
-})
+// app.listen(port, () => {
+//     connect()
+//     console.log('Server is up on port ' + port)
+// })
+
+
+let filePath = path.join(__dirname, './cert.pem');
+const certificate = fs.readFileSync(filePath, 'utf8');
+let filePath1 = path.join(__dirname, './privatekey.pem');
+const pvtkey = fs.readFileSync(filePath1, 'utf8');
+const options = {
+    key: pvtkey,
+    cert: certificate,
+};
+https.createServer(options, app)
+    .listen(port, function (req, res) {
+        connect()
+        console.log("Server started at port https " + port);
+    });

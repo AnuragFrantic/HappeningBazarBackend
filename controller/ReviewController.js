@@ -1,4 +1,4 @@
-const { aggregate } = require("../model/Policy");
+
 const Review = require("../model/ReviewModal");
 
 // Create a new review
@@ -74,6 +74,7 @@ exports.getReviewsByStore = async (req, res) => {
                     localField: "store",
                     foreignField: "_id",
                     as: "store",
+
                 },
             },
             {
@@ -84,6 +85,20 @@ exports.getReviewsByStore = async (req, res) => {
                     "store.url": storeurl, // Match the store URL
                 },
             },
+            {
+                $lookup: {
+                    from: "registers",
+                    localField: "user",
+                    foreignField: "_id",
+                    as: "userdetails",
+                }
+            },
+            {
+                $unwind: {
+                    path: "$userdetails",
+                    preserveNullAndEmptyArrays: true
+                }
+            }
         ]);
 
         res.status(200).json({
