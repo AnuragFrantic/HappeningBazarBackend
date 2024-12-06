@@ -17,10 +17,35 @@ exports.generateOfferCode = async (req, res) => {
 
         const offer = await Offer.findById(offerId);
         if (!offer) {
-            return res.status(404).json({
+            return res.status(200).json({
                 status: "FAILED",
                 message: "Offer not found",
                 error: 1,
+            });
+        }
+
+        // Get today's start and end time
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+
+        const todayEnd = new Date();
+        todayEnd.setHours(23, 59, 59, 999);
+
+        // Check if a code was already generated for this user and offer today
+        const existingCode = await GeneratedCode.findOne({
+            user,
+            offer: offerId,
+            vendor,
+            createdAt: { $gte: todayStart, $lte: todayEnd }, // Match today's date range
+        });
+
+        if (existingCode) {
+            return res.status(200).json({
+                status: "FAILED",
+                message: "Offer code already generated for today",
+                error: 1,
+                code: existingCode.code,
+                validUntil: existingCode.valid_until,
             });
         }
 

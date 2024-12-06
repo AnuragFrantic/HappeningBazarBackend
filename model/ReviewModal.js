@@ -6,7 +6,7 @@ const ReviewSchema = new mongoose.Schema({
     review: { type: String },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'Register' },
     store: { type: mongoose.Schema.Types.ObjectId, ref: "Store", required: true },
-})
+}, { timestamps: true })
 
 
 

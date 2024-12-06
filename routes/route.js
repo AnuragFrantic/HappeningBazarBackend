@@ -274,7 +274,7 @@ router.post("/reviews", authenticateToken, createReview);
 router.get("/reviews", getAllReviews);
 router.get("/reviews/store/:storeurl", getReviewsByStore);
 router.put("/reviews/:id", authenticateToken, updateReview);
-router.delete("/reviews/:id", authenticateToken, deleteReview);
+router.delete("/reviews/:id", deleteReview);
 
 
 

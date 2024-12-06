@@ -164,19 +164,8 @@ exports.updateReview = async (req, res) => {
 exports.deleteReview = async (req, res) => {
     try {
         const { id } = req.params;
-        const userId = req.user?._id; // Ensure the user is authenticated
-
-        if (!userId) {
-            return res.status(401).json({
-                status: "Failed",
-                message: "User not authenticated",
-                error: 1,
-            });
-        }
-
         const deletedReview = await Review.findOneAndDelete({
-            _id: id,
-            user: userId, // Ensure the review belongs to the authenticated user
+            _id: id
         });
 
         if (!deletedReview) {
