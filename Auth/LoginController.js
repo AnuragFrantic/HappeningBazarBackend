@@ -9,7 +9,7 @@ exports.LoginController = async (req, res) => {
         // Check if the user exists
         const user = await Register.findOne({ email });
         if (!user) {
-            return res.status(200).json({
+            return res.status(400).json({
                 message: "Invalid email",
                 details: [{ field: "email", message: "Invalid email" }],
                 error: 1,
@@ -18,7 +18,7 @@ exports.LoginController = async (req, res) => {
 
         // Validate password
         if (user.password !== password) {
-            return res.status(200).json({
+            return res.status(400).json({
                 message: "Invalid password",
                 details: [{ field: "password", message: "Invalid password" }],
                 error: 1,

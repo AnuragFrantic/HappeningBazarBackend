@@ -86,3 +86,57 @@ exports.generateOfferCode = async (req, res) => {
         });
     }
 };
+
+
+
+exports.getAllGeneratedCode = async (req, res) => {
+    try {
+        const { status } = req.query;
+
+        // Build the filter object based on the status query parameter
+        const filter = {};
+        if (status) {
+            filter.status = status;
+        }
+
+        // Fetch codes based on the filter
+        const codes = await GeneratedCode.find(filter).populate({
+            path: 'user',
+            select: 'name email',
+        });
+
+        const currentDate = new Date();
+
+        // Loop through codes and update the status if expired
+        for (const code of codes) {
+            if (new Date(code.valid_until) < currentDate && code.status !== "expired") {
+                // Update status to expired
+                code.status = "expired";
+                await code.save();
+            }
+        }
+
+        // Refetch updated codes based on the filter
+        const updatedCodes = await GeneratedCode.find(filter).populate({
+            path: 'user',
+            select: 'name email',
+        });
+
+        res.status(200).json({
+            status: "OK",
+            message: `Generated codes fetched successfully${status ? ` with status ${status}` : ""} and updated expired statuses`,
+            error: 0,
+            data: updatedCodes,
+        });
+    } catch (error) {
+        console.error("Error fetching or updating generated codes:", error);
+        res.status(500).json({
+            status: "FAILED",
+            message: "Error fetching or updating generated codes",
+            error: 1,
+        });
+    }
+};
+
+
+

@@ -13,10 +13,10 @@ exports.createOrUpdatePolicy = async (req, res) => {
             });
         }
 
-        // Generate URL from the title
+        
         const url = slugify(title, { lower: true, strict: true });
 
-        // Check if a policy with the same URL already exists
+        
         let policy = await Policy.findOne({ url });
 
         if (policy) {

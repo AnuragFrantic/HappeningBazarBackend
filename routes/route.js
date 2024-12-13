@@ -14,14 +14,14 @@ const { createContact, getContact } = require("../controller/ContactController")
 const { reportraise, getAllreport, getuserreport } = require("../controller/ReportController");
 
 const { createEvent, getallevent, deleteevent, updateevent, eventbyurl } = require("../controller/EventController");
-const { createStore, getAllStores, updateStore, deleteStore, getvendorstore, getstores_by_Subcategory_url } = require("../controller/CreateController");
+const { createStore, getAllStores, updateStore, deleteStore, getvendorstore, getstores_by_Subcategory_url, getstores_by_Category_url } = require("../controller/CreateController");
 const { createmembership, getallmembership, getmembershipbyid, updatemembership, deletemembership } = require("../controller/MembershipController");
 const { createRegistration, getAllRegistrations, getRegistrationById, deleteRegistration, updateRegistration } = require("../controller/EventRegistrationController");
 const { getAllStates, getStateByIsoCode } = require("../controller/StateController");
 const { storeBlog, getAllBlogs, updateBlog, deleteBlog, blogsbyurl } = require("../controller/BlogController");
 const { validateOfferCode } = require("../controller/AppliedOffercontoller");
 const { createOffer, getAllOffers, deleteOffer, getUserOffers, getOfferByUrl, updateOffer } = require("../controller/OfferController");
-const { generateOfferCode } = require("../controller/OfferCodeContoller");
+const { generateOfferCode, getAllGeneratedCode } = require("../controller/OfferCodeContoller");
 const { createFAQ, getAllFAQs, getFAQById, updateFAQ, deleteFAQ } = require("../controller/FaqController");
 const { createLead, getAllLeads, getLeadById, updateLead, deleteLead } = require("../controller/LeadController");
 const { createReview, getAllReviews, getReviewsByStore, updateReview, deleteReview } = require("../controller/ReviewController");
@@ -164,6 +164,8 @@ router.get('/getuseroffer', getUserOffers)
 router.get('/getoffer/:url', getOfferByUrl)
 
 router.post('/generate-code', generateOfferCode);
+router.get('/generate-code', getAllGeneratedCode);
+
 
 
 router.post('/apply-offer', validateOfferCode);
@@ -193,6 +195,8 @@ router.get("/vendorstore/:id", getvendorstore)
 router.delete("/store/:id", deleteStore)
 
 router.get('/store/:url', getstores_by_Subcategory_url)
+router.get('/categorystore/:url', getstores_by_Category_url)
+
 
 
 

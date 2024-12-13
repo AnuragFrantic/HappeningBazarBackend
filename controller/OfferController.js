@@ -142,6 +142,27 @@ exports.deleteOffer = async (req, res) => {
 };
 
 // Get user-specific offers
+// exports.getUserOffers = async (req, res) => {
+//     try {
+//         const { id } = req.query;
+
+//         if (!id) {
+//             return res.status(200).json({ status: "FAILED", message: "User ID is required", error: 1 });
+//         }
+
+//         const data = await Offer.find({ created_by: id }).populate("generated_codes");
+
+
+
+//         res.status(200).json({ status: "OK", message: "Offers fetched successfully", error: 0, data });
+//     } catch (error) {
+//         console.error("Error fetching user offers:", error);
+//         res.status(500).json({ status: "FAILED", message: "Error fetching offers", error: 1 });
+//     }
+// };
+
+
+
 exports.getUserOffers = async (req, res) => {
     try {
         const { id } = req.query;
@@ -150,16 +171,25 @@ exports.getUserOffers = async (req, res) => {
             return res.status(200).json({ status: "FAILED", message: "User ID is required", error: 1 });
         }
 
-        const data = await Offer.find({ created_by: id }).populate("generated_codes");
+        const offers = await Offer.find({ created_by: id }).populate("generated_codes");
 
+        // Filter out non-active generated_codes
+        const filteredOffers = offers.map((offer) => {
+            const activeCodes = offer.generated_codes.filter((code) => code.status === "active");
+            return {
+                ...offer.toObject(),
+                generated_codes: activeCodes,
+            };
+        });
 
-
-        res.status(200).json({ status: "OK", message: "Offers fetched successfully", error: 0, data });
+        res.status(200).json({ status: "OK", message: "Offers fetched successfully", error: 0, data: filteredOffers });
     } catch (error) {
         console.error("Error fetching user offers:", error);
         res.status(500).json({ status: "FAILED", message: "Error fetching offers", error: 1 });
     }
 };
+
+
 
 // Get offer by URL
 exports.getOfferByUrl = async (req, res) => {

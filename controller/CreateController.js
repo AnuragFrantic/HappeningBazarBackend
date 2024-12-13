@@ -107,6 +107,82 @@ exports.getstores_by_Subcategory_url = async (req, res) => {
 };
 
 
+exports.getstores_by_Category_url = async (req, res) => {
+    try {
+        const url = req.params.url; // Get the category URL from the request parameters
+
+        const data = await Store.aggregate([
+            {
+                // Lookup to join category details based on the category field
+                $lookup: {
+                    from: 'categories', // The name of the category collection
+                    localField: 'category', // Field from Store
+                    foreignField: '_id', // Field from Category
+                    as: 'categoryDetails'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$categoryDetails',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                // Lookup to join subcategory details based on the subcategory field
+                $lookup: {
+                    from: 'subcategories', // The name of the subcategory collection
+                    localField: 'subcategory', // Field from Store
+                    foreignField: '_id', // Field from SubCategory
+                    as: 'subcategoryDetails'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$subcategoryDetails',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $match: { 'categoryDetails.url': url } // Match stores by the category URL
+            },
+            {
+                $project: {
+                    _id: 1,
+                    title: 1,
+                    desc: 1,
+                    image: 1,
+                    category: 1,
+                    subcategory: 1,
+                    description: 1,
+                    product: 1,
+                    url: 1,
+                    created_by: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    'categoryDetails._id': 1,
+                    'categoryDetails.name': 1,
+                    'categoryDetails.url': 1,
+                    'subcategoryDetails._id': 1,
+                    'subcategoryDetails.type': 1,
+                    'subcategoryDetails.url': 1
+                }
+            }
+        ]);
+
+        // If no data found, return an error
+        if (!data || data.length === 0) {
+            return res.status(201).json({ error: 1, message: "No stores found for the given category URL" });
+        }
+
+        // Return the matched stores with all store fields and populated category and subcategory details
+        res.status(200).json({ error: 0, data });
+    } catch (err) {
+        console.error("Error fetching stores by category URL:", err);
+        res.status(500).json({ error: 1, message: err.message });
+    }
+};
+
+
 
 
 
