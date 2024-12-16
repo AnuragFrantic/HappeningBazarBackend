@@ -24,6 +24,23 @@ exports.generateOfferCode = async (req, res) => {
             });
         }
 
+        // Check if the offer's usage or daily limit is exhausted
+        if (offer.usage_limit <= 0) {
+            return res.status(200).json({
+                status: "FAILED",
+                message: "Offer usage limit has been reached",
+                error: 1,
+            });
+        }
+
+        if (offer.daily_limit <= 0) {
+            return res.status(200).json({
+                status: "FAILED",
+                message: "Offer daily limit has been reached",
+                error: 1,
+            });
+        }
+
         // Get today's start and end time
         const todayStart = new Date();
         todayStart.setHours(0, 0, 0, 0);
@@ -66,6 +83,11 @@ exports.generateOfferCode = async (req, res) => {
 
         // Add the generated code ID to the offer's generated_codes array
         offer.generated_codes.push(newCode._id);
+
+        // Decrement the usage and daily limits
+        offer.usage_limit -= 1;
+        offer.daily_limit -= 1;
+
         await offer.save();
 
         // Send the response with the new code details
@@ -89,14 +111,18 @@ exports.generateOfferCode = async (req, res) => {
 
 
 
+
 exports.getAllGeneratedCode = async (req, res) => {
     try {
-        const { status } = req.query;
+        const { status, user } = req.query;
 
-        // Build the filter object based on the status query parameter
+        // Build the filter object based on the query parameters
         const filter = {};
         if (status) {
             filter.status = status;
+        }
+        if (user) {
+            filter.user = user;
         }
 
         // Fetch codes based on the filter
@@ -124,7 +150,7 @@ exports.getAllGeneratedCode = async (req, res) => {
 
         res.status(200).json({
             status: "OK",
-            message: `Generated codes fetched successfully${status ? ` with status ${status}` : ""} and updated expired statuses`,
+            message: `Generated codes fetched successfully${status ? ` with status ${status}` : ""}${user ? ` for user ${user}` : ""} and updated expired statuses`,
             error: 0,
             data: updatedCodes,
         });
@@ -137,6 +163,9 @@ exports.getAllGeneratedCode = async (req, res) => {
         });
     }
 };
+
+
+
 
 
 

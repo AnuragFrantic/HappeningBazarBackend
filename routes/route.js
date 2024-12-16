@@ -27,6 +27,7 @@ const { createLead, getAllLeads, getLeadById, updateLead, deleteLead } = require
 const { createReview, getAllReviews, getReviewsByStore, updateReview, deleteReview } = require("../controller/ReviewController");
 const { createOrUpdatePolicy, getPolicies, getPolicyByUrl, deletePolicy } = require("../controller/PolicyController");
 const authenticateToken = require("../middleware/AuthicateToken");
+const { createOpenHour, getOpenHours, getOpenHourById, updateOpenHour, deleteOpenHour } = require("../controller/OpenHourController");
 
 
 const router = express.Router();
@@ -296,5 +297,23 @@ router.get('/policy/:url', getPolicyByUrl);
 
 // Route to delete a policy by URL
 router.delete('/policy/:url', deletePolicy);
+
+
+//opening hour
+
+router.post('/openhour', createOpenHour);
+
+
+router.get('/openhour/', getOpenHours);
+
+
+router.get('/openhour/:id', getOpenHourById);
+
+
+router.put('/openhour/:id', updateOpenHour);
+
+
+router.delete('/openhour/:id', deleteOpenHour);
+
 
 module.exports = router;

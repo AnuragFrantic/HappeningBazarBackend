@@ -11,15 +11,7 @@ exports.createOpenHour = async (req, res) => {
     }
 };
 
-// Get all OpenHours
-exports.getOpenHours = async (req, res) => {
-    try {
-        const openHours = await OpenHour.find().populate('store');
-        res.status(200).json({ error: 0, data: openHours });
-    } catch (error) {
-        res.status(500).json({ error: 1, message: error.message });
-    }
-};
+
 
 // Get a single OpenHour by ID
 exports.getOpenHourById = async (req, res) => {
@@ -29,6 +21,31 @@ exports.getOpenHourById = async (req, res) => {
             return res.status(500).json({ error: 1, message: 'OpenHour not found' });
         }
         res.status(200).json({ error: 0, data: openHour });
+    } catch (error) {
+        res.status(500).json({ error: 1, message: error.message });
+    }
+};
+
+
+exports.getOpenHours = async (req, res) => {
+    try {
+        const { storeUrl } = req.query; // Capture store URL from query params
+        let query = {};
+
+        if (storeUrl) {
+            query = { 'store.url': storeUrl }; // Filter based on store URL
+        }
+
+        // Find OpenHours and populate related store details
+        const openHours = await OpenHour.find(query).populate({
+            path: 'store',
+            match: storeUrl ? { url: storeUrl } : {}, // Match the store URL if provided
+        });
+
+        // Filter out any OpenHour entries without matching stores (if storeUrl is provided)
+        const filteredOpenHours = openHours.filter((openHour) => openHour.store);
+
+        res.status(200).json({ error: 0, data: filteredOpenHours });
     } catch (error) {
         res.status(500).json({ error: 1, message: error.message });
     }

@@ -116,7 +116,7 @@ exports.validateOfferCode = async (req, res) => {
             });
         }
 
-        // Check if usage limit is reached
+        // Check if usage limit is reached for the generated code
         if (generatedCode.usage_limit <= 0) {
             return res.status(200).json({
                 status: "FAILED",
@@ -125,15 +125,24 @@ exports.validateOfferCode = async (req, res) => {
             });
         }
 
-        // Check daily application limit
+        // Check if the offer's global daily usage limit is exceeded
+        if (offer.daily_limit <= 0) {
+            return res.status(200).json({
+                status: "FAILED",
+                message: "Daily limit for this offer has been reached",
+                error: 1,
+            });
+        }
+
+        // Check daily application limit for the user
         const currentDate = new Date().setHours(0, 0, 0, 0); // Normalize to midnight for today
         const todayApplications = await AppliedOffer.countDocuments({
             offer: generatedCode.offer,
             user: generatedCode.user,
-            createdAt: { $gte: currentDate }
+            createdAt: { $gte: currentDate },
         });
 
-        if (todayApplications >= offer.daily_limit) {
+        if (todayApplications >= offer.daily_limit_per_user) { // Assuming you have a per-user daily limit
             return res.status(200).json({
                 status: "FAILED",
                 message: "User has reached the daily application limit for this offer",
@@ -141,14 +150,16 @@ exports.validateOfferCode = async (req, res) => {
             });
         }
 
-        // Update the status of the generated code to 'used' and decrease usage limit
+        // Update the status of the generated code to 'used' and decrease its usage limit
         generatedCode.status = 'used';
-        generatedCode.usage_limit -= 1;
+
         await generatedCode.save();
 
-        // Update today's apply count for the offer
+        // Decrement the global daily limit for the offer
+        offer.daily_limit -= 1;
+        offer.usage_limit -= 1;
         offer.today_apply = (offer.today_apply || 0) + 1; // Increment today_apply count
-        await offer.save(); // Save the updated offer
+        await offer.save();
 
         // Log the applied offer in the AppliedOffer collection
         const appliedOffer = new AppliedOffer({
@@ -177,8 +188,3 @@ exports.validateOfferCode = async (req, res) => {
         });
     }
 };
-
-
-
-// bug
-//isme abhi daily_copon or usage_limit ko update nahi kar raha hai

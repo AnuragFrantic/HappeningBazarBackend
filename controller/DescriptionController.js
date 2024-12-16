@@ -187,7 +187,7 @@ exports.getdescriptionbyurl = async (req, res) => {
         ]);
 
         if (description.length === 0) {
-            return res.status(500).json({ message: 'Description not found' });
+            return res.status(200).json({ message: 'Description not found' });
         }
 
         res.status(200).json({
