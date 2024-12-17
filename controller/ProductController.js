@@ -142,7 +142,7 @@ exports.deleteProductImage = async (req, res) => {
 exports.getuserProduct = async (req, res) => {
     try {
         const { id } = req.query;
-        const data = await ProductModal.find({ 'created_by': id })
+        const data = await ProductModal.find({ 'created_by': id }).populate("store")
         res.status(201).json({ status: "OK", message: "Product fecth successfully", error: 0, data: data });
     } catch (err) {
         res.status(500).json({ status: "OK", message: "Product Not Found", error: 1 })

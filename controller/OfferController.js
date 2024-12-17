@@ -20,7 +20,7 @@ exports.createOffer = async (req, res) => {
 
 // Get all offers
 
-exports.getAllOffers = async (req, res) => {
+exports.getfilteroffer = async (req, res) => {
     try {
         const { state, city, alluser, category } = req.query;
 
@@ -83,6 +83,23 @@ exports.getAllOffers = async (req, res) => {
 };
 
 
+
+exports.getAllOffers = async (req, res) => {
+    try {
+        const offer = await Offer.find();
+        return res.status(200).json({
+            message: "Offer Fetch successfully.",
+            data: offer,
+            error: 0
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "Internal server error.",
+            error: 1
+        });
+    }
+};
 
 
 

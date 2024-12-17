@@ -1,5 +1,5 @@
 const express = require("express");
-const { storeCat, getAllCategory, deleteCategory, updateCategory } = require("../controller/Categories");
+const { storeCat, getAllCategory, deleteCategory, updateCategory, getCategorybyurl } = require("../controller/Categories");
 const { substore, getallsubcat, deletesubcat, updateSubCategory, getbycategory, getAllCategoriesWithSubcategories, deleteImageFromSubCategory, deleteImagesubsubCategory, getbycategoryurl } = require("../controller/SubCategory");
 
 const upload = require('../Config/Multerconfig');
@@ -20,7 +20,7 @@ const { createRegistration, getAllRegistrations, getRegistrationById, deleteRegi
 const { getAllStates, getStateByIsoCode } = require("../controller/StateController");
 const { storeBlog, getAllBlogs, updateBlog, deleteBlog, blogsbyurl } = require("../controller/BlogController");
 const { validateOfferCode } = require("../controller/AppliedOffercontoller");
-const { createOffer, getAllOffers, deleteOffer, getUserOffers, getOfferByUrl, updateOffer } = require("../controller/OfferController");
+const { createOffer, getAllOffers, deleteOffer, getUserOffers, getOfferByUrl, updateOffer, getfilteroffer, getallOffer } = require("../controller/OfferController");
 const { generateOfferCode, getAllGeneratedCode } = require("../controller/OfferCodeContoller");
 const { createFAQ, getAllFAQs, getFAQById, updateFAQ, deleteFAQ } = require("../controller/FaqController");
 const { createLead, getAllLeads, getLeadById, updateLead, deleteLead } = require("../controller/LeadController");
@@ -36,13 +36,17 @@ const router = express.Router();
 
 router.post("/category", verifyToken, adminAuth, upload.fields([
     { name: 'image', maxCount: 1 },
-    { name: 'icon', maxCount: 1 }
+    { name: 'icon', maxCount: 1 },
+    { name: 'banner', maxCount: 1 }
 ]), storeCat);
 router.get("/category", getAllCategory);
 
+router.get("/category/:url", getCategorybyurl);
+
 router.put("/category/:id", upload.fields([
     { name: 'image', maxCount: 1 },
-    { name: 'icon', maxCount: 1 }
+    { name: 'icon', maxCount: 1 },
+    { name: 'banner', maxCount: 1 }
 ]), verifyToken, adminAuth, updateCategory);
 
 router.delete("/deletecategory/:id", verifyToken, adminAuth, deleteCategory);
@@ -157,7 +161,9 @@ router.get('/userreport', getuserreport)
 //offer
 
 router.post('/offer', upload.single("image"), createOffer)
-router.get('/offer', getAllOffers)
+router.get('/offer', getfilteroffer)
+router.get('/alloffer', getAllOffers)
+
 router.put('/offer', upload.single("image"), updateOffer)
 router.delete('/offer', deleteOffer)
 router.get('/getuseroffer', getUserOffers)

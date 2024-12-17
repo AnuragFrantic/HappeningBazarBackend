@@ -14,6 +14,9 @@ exports.storeCat = async (req, res) => {
             if (req.files.icon) {
                 data.icon = req.files.icon[0].path;
             }
+            if (req.files.banner) {
+                data.banner = req.files.banner[0].path;
+            }
         }
         await create.save()
         res.status(200).send({ "status": "OK", "message": "Data Created Successfully", error: 0 })
@@ -26,6 +29,16 @@ exports.storeCat = async (req, res) => {
 exports.getAllCategory = async (req, res) => {
     try {
         const data = await CategoriesModal.find()
+        res.status(200).send({ "status": "OK", data: data, error: 0 })
+    } catch (e) {
+        res.status(500).send({ "status": "Failed", "message": e.message, error: 1 })
+    }
+}
+
+
+exports.getCategorybyurl = async (req, res) => {
+    try {
+        const data = await CategoriesModal.findOne({ url: req.params.url })
         res.status(200).send({ "status": "OK", data: data, error: 0 })
     } catch (e) {
         res.status(500).send({ "status": "Failed", "message": e.message, error: 1 })
@@ -49,6 +62,9 @@ exports.updateCategory = async (req, res) => {
             if (req.files.icon) {
                 // Update the icon path in the updateData object
                 updateData.icon = req.files.icon[0].path;
+            }
+            if (req.files.banner) {
+                updateData.banner = req.files.banner[0].path;
             }
         }
 

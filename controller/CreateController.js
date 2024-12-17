@@ -24,24 +24,29 @@ exports.getAllStores = async (req, res) => {
 
         // Build the filter object for state and city
         let filter = {};
+        if (state) filter.state = state;
+        if (city) filter.city = city;
 
-        if (state) {
-            filter.state = state;
-        }
-        if (city) {
-            filter.city = city;
-        }
-
-        // Find stores with the optional filters and populate category and subcategory fields
+        // Find stores with the optional filters and ensure the creator's status is 'accepted'
         const stores = await Store.find(filter)
+            .populate({
+                path: 'created_by',
+                match: { status: 'accepted' }, // Only include stores where the creator's status is 'accepted'
+                select: 'status'
+            })
             .populate('category', 'name')
-            .populate('subcategory', 'type url');
+            .populate('subcategory', 'type url')
+            .exec();
 
-        res.status(200).json({ error: 0, data: stores });
+        // Remove any stores where the `created_by` did not match the filter
+        const filteredStores = stores.filter(store => store.created_by);
+
+        res.status(200).json({ error: 0, data: filteredStores });
     } catch (err) {
         res.status(500).json({ error: 1, message: err.message });
     }
 };
+
 
 
 
@@ -54,37 +59,76 @@ exports.getstores_by_Subcategory_url = async (req, res) => {
         const url = req.params.url;
 
         const data = await Store.aggregate([
+            // Lookup subcategory details
             {
-                // Lookup to join subcategory details based on the subcategory field
                 $lookup: {
-                    from: 'subcategories', // The name of the subcategory collection
-                    localField: 'subcategory', // Field from Store
-                    foreignField: '_id', // Field from SubCategory
+                    from: 'subcategories',
+                    localField: 'subcategory',
+                    foreignField: '_id',
                     as: 'subcategoryDetails'
                 }
             },
             {
-
                 $unwind: {
                     path: '$subcategoryDetails',
                     preserveNullAndEmptyArrays: true
                 }
             },
+            // Match stores by subcategory URL
             {
                 $match: { 'subcategoryDetails.url': url }
             },
+            // Lookup category details
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'category',
+                    foreignField: '_id',
+                    as: 'categoryDetails'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$categoryDetails',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            // Lookup created_by (assuming created_by refers to a users collection)
+            {
+                $lookup: {
+                    from: 'registers', // Replace 'registers' with the actual collection name for users
+                    localField: 'created_by',
+                    foreignField: '_id',
+                    as: 'createdByDetails'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$createdByDetails',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            // Match only stores where created_by.status is 'accepted'
+            {
+                $match: { 'createdByDetails.status': 'accepted' }
+            },
+            // Select relevant fields
             {
                 $project: {
                     _id: 1,
                     title: 1,
                     desc: 1,
                     image: 1,
-                    category: 1,
+                    category: '$categoryDetails',
                     subcategory: 1,
                     description: 1,
                     product: 1,
                     url: 1,
-                    created_by: 1,
+                    created_by: {
+                        _id: '$createdByDetails._id',
+                        name: '$createdByDetails.name',
+                        status: '$createdByDetails.status'
+                    }, // Include only specific fields for created_by
                     createdAt: 1,
                     updatedAt: 1,
                     'subcategoryDetails._id': 1,
@@ -96,15 +140,20 @@ exports.getstores_by_Subcategory_url = async (req, res) => {
 
         // If no data found, return an error
         if (!data || data.length === 0) {
-            return res.status(201).json({ error: 1, message: "No stores found for the given subcategory URL" });
+            return res.status(404).json({ error: 1, message: "No stores found for the given subcategory URL" });
         }
 
-        // Return the matched stores with all store fields and populated subcategory details
+        // Return the matched stores with all store fields and populated subcategory, category, and created_by details
         res.status(200).json({ error: 0, data });
     } catch (err) {
         res.status(500).json({ error: 1, message: err.message });
     }
 };
+
+
+
+
+
 
 
 exports.getstores_by_Category_url = async (req, res) => {
@@ -204,18 +253,26 @@ exports.getStoreById = async (req, res) => {
 
 
 exports.getvendorstore = async (req, res) => {
-    let vendorid = req.params.id
-
+    const vendorid = req.params.id;
 
     try {
-        const store = await Store.find({ "created_by": vendorid }).populate('category', 'name')
+        const stores = await Store.find({ created_by: vendorid })
+            .populate({
+                path: 'created_by',
+                match: { status: 'accepted' }, // Ensure creator's status is 'accepted'
+                select: 'status'
+            })
+            .populate('category', 'name')
             .populate('subcategory', 'type');
-        res.status(200).json({ error: 0, data: store });
 
+        // Filter stores where `created_by` matches the criteria
+        const filteredStores = stores.filter(store => store.created_by);
+
+        res.status(200).json({ error: 0, data: filteredStores });
     } catch (err) {
         res.status(500).json({ error: 1, message: err.message });
     }
-}
+};
 
 // Update a store
 exports.updateStore = async (req, res) => {
@@ -254,5 +311,6 @@ exports.deleteStore = async (req, res) => {
         res.status(500).send({ "status": "Failed", "message": e.message, error: 1 });
     }
 }
+
 
 

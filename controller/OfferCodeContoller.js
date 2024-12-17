@@ -116,13 +116,13 @@ exports.getAllGeneratedCode = async (req, res) => {
     try {
         const { status, user } = req.query;
 
-        // Build the filter object based on the query parameters
+
         const filter = {};
         if (status) {
             filter.status = status;
         }
         if (user) {
-            filter.user = user;
+            filter.vendor = user;
         }
 
         // Fetch codes based on the filter

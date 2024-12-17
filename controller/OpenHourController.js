@@ -13,7 +13,7 @@ exports.createOpenHour = async (req, res) => {
 
 
 
-// Get a single OpenHour by ID
+
 exports.getOpenHourById = async (req, res) => {
     try {
         const openHour = await OpenHour.findById(req.params.id).populate('store');
@@ -32,24 +32,21 @@ exports.getOpenHours = async (req, res) => {
         const { storeUrl } = req.query; // Capture store URL from query params
         let query = {};
 
-        if (storeUrl) {
-            query = { 'store.url': storeUrl }; // Filter based on store URL
-        }
-
         // Find OpenHours and populate related store details
         const openHours = await OpenHour.find(query).populate({
             path: 'store',
-            match: storeUrl ? { url: storeUrl } : {}, // Match the store URL if provided
         });
-
-        // Filter out any OpenHour entries without matching stores (if storeUrl is provided)
-        const filteredOpenHours = openHours.filter((openHour) => openHour.store);
+        // If storeUrl is provided, filter the populated OpenHours based on the store URL
+        const filteredOpenHours = storeUrl
+            ? openHours.filter((openHour) => openHour.store && openHour.store.url === storeUrl)
+            : openHours;
 
         res.status(200).json({ error: 0, data: filteredOpenHours });
     } catch (error) {
         res.status(500).json({ error: 1, message: error.message });
     }
 };
+
 
 // Update an OpenHour by ID
 exports.updateOpenHour = async (req, res) => {
@@ -76,5 +73,6 @@ exports.deleteOpenHour = async (req, res) => {
         res.status(500).json({ error: 1, message: error.message });
     }
 };
+
 
 
