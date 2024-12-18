@@ -116,7 +116,6 @@ exports.getAllGeneratedCode = async (req, res) => {
     try {
         const { status, user } = req.query;
 
-
         const filter = {};
         if (status) {
             filter.status = status;
@@ -126,14 +125,22 @@ exports.getAllGeneratedCode = async (req, res) => {
         }
 
         // Fetch codes based on the filter
-        const codes = await GeneratedCode.find(filter).populate({
-            path: 'user',
-            select: 'name email',
-        });
+        const codes = await GeneratedCode.find(filter).populate([
+            {
+                path: 'user',
+                select: 'name email',
+            },
+            {
+                path: 'offer',
+                select: 'name usage_limit start_date expiry_date is_active _id image',
+            },
+            {
+                path: 'vendor',
+                select: 'name email mobile',
+            },
+        ]);
 
         const currentDate = new Date();
-
-        // Loop through codes and update the status if expired
         for (const code of codes) {
             if (new Date(code.valid_until) < currentDate && code.status !== "expired") {
                 // Update status to expired
@@ -142,11 +149,21 @@ exports.getAllGeneratedCode = async (req, res) => {
             }
         }
 
-        // Refetch updated codes based on the filter
-        const updatedCodes = await GeneratedCode.find(filter).populate({
-            path: 'user',
-            select: 'name email',
-        });
+
+        const updatedCodes = await GeneratedCode.find(filter).populate([
+            {
+                path: 'user',
+                select: 'name email',
+            },
+            {
+                path: 'offer',
+                select: 'name usage_limit start_date expiry_date is_active _id image',
+            },
+            {
+                path: 'vendor',
+                select: 'name email mobile',
+            },
+        ]);
 
         res.status(200).json({
             status: "OK",
@@ -163,6 +180,11 @@ exports.getAllGeneratedCode = async (req, res) => {
         });
     }
 };
+
+
+
+
+
 
 
 

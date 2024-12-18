@@ -74,7 +74,6 @@ exports.getReviewsByStore = async (req, res) => {
                     localField: "store",
                     foreignField: "_id",
                     as: "store",
-
                 },
             },
             {
@@ -91,14 +90,19 @@ exports.getReviewsByStore = async (req, res) => {
                     localField: "user",
                     foreignField: "_id",
                     as: "userdetails",
-                }
+                },
             },
             {
                 $unwind: {
                     path: "$userdetails",
-                    preserveNullAndEmptyArrays: true
-                }
-            }
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $sort: {
+                    createdAt: -1, // Sort reviews by the `createdAt` field in descending order
+                },
+            },
         ]);
 
         res.status(200).json({
@@ -114,6 +118,7 @@ exports.getReviewsByStore = async (req, res) => {
         });
     }
 };
+
 
 
 

@@ -244,7 +244,7 @@ exports.getbyUser = async (req, res) => {
 
 exports.getbyUser = async (req, res) => {
     try {
-        const { type } = req.query; // Extract the type from req.query
+        const { type } = req.query;
         const data = await Register.find({ type: type, status: "accepted" })
 
         // Respond with the fetched data

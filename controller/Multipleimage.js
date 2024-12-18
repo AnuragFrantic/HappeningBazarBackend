@@ -24,7 +24,7 @@ exports.getBanners = async (req, res) => {
 
         const query = type ? { type } : {};
 
-        // Fetch banners matching the query
+
         const data = await Banner.find(query);
 
         // Send the response
