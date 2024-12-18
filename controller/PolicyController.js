@@ -13,10 +13,10 @@ exports.createOrUpdatePolicy = async (req, res) => {
             });
         }
 
-        
+
         const url = slugify(title, { lower: true, strict: true });
 
-        
+
         let policy = await Policy.findOne({ url });
 
         if (policy) {
@@ -79,7 +79,7 @@ exports.getPolicyByUrl = async (req, res) => {
         const policy = await Policy.findOne({ url });
 
         if (!policy) {
-            return res.status(404).json({
+            return res.status(200).json({
                 message: "Policy not found.",
                 error: 1
             });
@@ -105,7 +105,7 @@ exports.deletePolicy = async (req, res) => {
         const policy = await Policy.findOneAndDelete({ url });
 
         if (!policy) {
-            return res.status(404).json({
+            return res.status(200).json({
                 message: "Policy not found.",
                 error: 1
             });

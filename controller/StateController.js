@@ -16,7 +16,7 @@ exports.getStateByIsoCode = (req, res) => {
         const isoCode = req.params.isoCode.toUpperCase();
         const state = states.find(state => state.isoCode === isoCode);
         if (!state) {
-            return res.status(404).json({ message: "State not found" });
+            return res.status(200).json({ message: "State not found" });
         }
         res.status(200).json(state);
     } catch (error) {

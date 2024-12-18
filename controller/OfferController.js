@@ -126,7 +126,7 @@ exports.updateOffer = async (req, res) => {
         const updatedOffer = await Offer.findByIdAndUpdate(id, updatedData, { new: true });
 
         if (!updatedOffer) {
-            return res.status(404).json({ status: "FAILED", message: "Offer not found", error: 1 });
+            return res.status(200).json({ status: "FAILED", message: "Offer not found", error: 1 });
         }
 
         res.status(200).json({ status: "OK", message: "Offer updated successfully", error: 0, data: updatedOffer });
@@ -148,7 +148,7 @@ exports.deleteOffer = async (req, res) => {
         const deletedOffer = await Offer.findByIdAndDelete(id);
 
         if (!deletedOffer) {
-            return res.status(404).json({ status: "FAILED", message: "Offer not found", error: 1 });
+            return res.status(200).json({ status: "FAILED", message: "Offer not found", error: 1 });
         }
 
         res.status(200).json({ status: "OK", message: "Offer deleted successfully", error: 0 });
@@ -227,7 +227,7 @@ exports.getOfferByUrl = async (req, res) => {
         ]);
 
         if (!offerData.length) {
-            return res.status(404).json({ status: "FAILED", message: "No Offer found for the given URL", error: 1 });
+            return res.status(200).json({ status: "FAILED", message: "No Offer found for the given URL", error: 1 });
         }
 
         res.status(200).json({ status: "OK", message: "Offer fetched successfully", error: 0, data: offerData });

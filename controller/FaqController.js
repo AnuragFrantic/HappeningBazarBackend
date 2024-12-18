@@ -31,7 +31,7 @@ exports.getFAQById = async (req, res) => {
     try {
         const faq = await FAQ.findById(req.params.id);
         if (!faq) {
-            return res.status(404).json({ status: 'Failed', message: 'FAQ not found', error: 1 });
+            return res.status(200).json({ status: 'Failed', message: 'FAQ not found', error: 1 });
         }
         res.status(200).json({ status: 'Success', error: 0, data: faq });
     } catch (error) {
@@ -44,7 +44,7 @@ exports.updateFAQ = async (req, res) => {
     try {
         const updatedFAQ = await FAQ.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!updatedFAQ) {
-            return res.status(404).json({ status: 'Failed', message: 'FAQ not found', error: 1 });
+            return res.status(200).json({ status: 'Failed', message: 'FAQ not found', error: 1 });
         }
         res.status(200).json({ status: 'Success', message: 'FAQ updated successfully', error: 0, data: updatedFAQ });
     } catch (error) {
@@ -57,7 +57,7 @@ exports.deleteFAQ = async (req, res) => {
     try {
         const deletedFAQ = await FAQ.findByIdAndDelete(req.params.id);
         if (!deletedFAQ) {
-            return res.status(404).json({ status: 'Failed', message: 'FAQ not found', error: 1 });
+            return res.status(200).json({ status: 'Failed', message: 'FAQ not found', error: 1 });
         }
         res.status(200).json({ status: 'Success', message: 'FAQ deleted successfully', error: 0, data: deletedFAQ });
     } catch (error) {

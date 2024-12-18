@@ -18,7 +18,7 @@
 //         const generatedCode = await GeneratedCode.findOne({ code });
 
 //         if (!generatedCode) {
-//             return res.status(404).json({
+//             return res.status(200).json({
 //                 status: "FAILED",
 //                 message: "Invalid offer code",
 //                 error: 1,
@@ -89,7 +89,7 @@ exports.validateOfferCode = async (req, res) => {
         const generatedCode = await GeneratedCode.findOne({ code });
 
         if (!generatedCode) {
-            return res.status(404).json({
+            return res.status(200).json({
                 status: "FAILED",
                 message: "Invalid offer code",
                 error: 1,
@@ -100,7 +100,7 @@ exports.validateOfferCode = async (req, res) => {
         const offer = await Offer.findById(generatedCode.offer);
 
         if (!offer) {
-            return res.status(404).json({
+            return res.status(200).json({
                 status: "FAILED",
                 message: "Related offer not found",
                 error: 1,

@@ -67,7 +67,7 @@ exports.updateBanner = (req, res) => {
     Banner.findByIdAndUpdate(id, updateData, { new: true })
         .then(banner => {
             if (!banner) {
-                return res.status(404).json({ message: 'Banner not found', error: 1 });
+                return res.status(200).json({ message: 'Banner not found', error: 1 });
             }
             res.status(200).send({ status: "OK", message: "Banner Updated Successfully", error: 0 });
         })

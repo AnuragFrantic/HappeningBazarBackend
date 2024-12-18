@@ -54,20 +54,20 @@ exports.getbycategory = async (req, res) => {
 
 exports.getbycategoryurl = async (req, res) => {
     const url = req.params.url;
-    
+
 
     try {
         const data = await SubCategoryModal.find()
             .populate({
                 path: 'category',
                 match: { url: url }
-            });   
+            });
 
         // Filter out documents where `category` is null (no match found)
         const filteredData = data.filter(subcategory => subcategory.category);
 
         if (filteredData.length === 0) {
-            return res.status(404).json({ status: "Failed", message: "Category not found", error: 1 });
+            return res.status(200).json({ status: "Failed", message: "Category not found", error: 1 });
         }
 
         res.status(200).json({ status: "Success", data: filteredData, error: 0 });
@@ -202,7 +202,7 @@ exports.deleteImagesubsubCategory = async (req, res) => {
         );
 
         if (!subServiceCard) {
-            return res.status(404).json({ message: 'Subcategory not found', id: imageId });
+            return res.status(200).json({ message: 'Subcategory not found', id: imageId });
         }
 
         // Image successfully deleted

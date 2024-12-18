@@ -114,13 +114,13 @@ exports.deleteProductImage = async (req, res) => {
         // Find the product by ID
         let product = await ProductModal.findById(id);
         if (!product) {
-            return res.status(404).send({ status: "Failed", message: "Product not found" });
+            return res.status(200).send({ status: "Failed", message: "Product not found" });
         }
 
         // Find the index of the image to delete
         const imageIndex = product.image.findIndex(img => img._id.toString() === imageId);
         if (imageIndex === -1) {
-            return res.status(404).send({ status: "Failed", message: "Image not found" });
+            return res.status(200).send({ status: "Failed", message: "Image not found" });
         }
 
         // Remove the image from the array
@@ -195,7 +195,7 @@ exports.getStoreurlbyproduct = async (req, res) => {
         ]);
 
         if (products.length === 0) {
-            return res.status(404).json({ message: 'No products found for the given URL' });
+            return res.status(200).json({ message: 'No products found for the given URL' });
         }
 
         res.status(200).json({
@@ -220,7 +220,7 @@ exports.findProductByUrl = async (req, res) => {
         });
 
         if (!product) {
-            return res.status(404).json({ status: "Error", message: "Product not found", error: 1 });
+            return res.status(200).json({ status: "Error", message: "Product not found", error: 1 });
         }
 
         res.status(200).json({ status: "OK", message: "Product fetched successfully", error: 0, data: product });

@@ -90,7 +90,7 @@ exports.getProfile = async (req, res) => {
         // Fetch user data based on the user ID from the token
         const userData = await Register.findById(userId);
         if (!userData) {
-            return res.status(404).json({
+            return res.status(200).json({
                 message: "User not found!",
                 error: 1,
             });

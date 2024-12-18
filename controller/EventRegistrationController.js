@@ -31,7 +31,7 @@ exports.getRegistrationById = async (req, res) => {
     try {
         const registration = await EventRegistration.findById(req.params.id).populate('event user');
         if (!registration) {
-            return res.status(404).json({ message: 'Registration not found' });
+            return res.status(200).json({ message: 'Registration not found' });
         }
         return res.status(200).json(registration);
     } catch (error) {
@@ -49,7 +49,7 @@ exports.updateRegistration = async (req, res) => {
         );
 
         if (!updatedRegistration) {
-            return res.status(404).json({ message: 'Registration not found' });
+            return res.status(200).json({ message: 'Registration not found' });
         }
 
         return res.status(200).json({
@@ -66,7 +66,7 @@ exports.deleteRegistration = async (req, res) => {
     try {
         const deletedRegistration = await EventRegistration.findByIdAndDelete(req.params.id);
         if (!deletedRegistration) {
-            return res.status(404).json({ message: 'Registration not found', error: 1 });
+            return res.status(200).json({ message: 'Registration not found', error: 1 });
         }
 
         return res.status(200).json({

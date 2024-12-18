@@ -60,7 +60,7 @@ exports.getmembershipbyid = async (req, res) => {
         const membership = await Membership.findById(id);
 
         if (!membership) {
-            return res.status(404).json({
+            return res.status(200).json({
                 message: "Membership not found",
                 error: 1
             });
@@ -100,7 +100,7 @@ exports.updatemembership = async (req, res) => {
         const updatedMembership = await Membership.findByIdAndUpdate(id, data, { new: true });
 
         if (!updatedMembership) {
-            return res.status(404).json({
+            return res.status(200).json({
                 message: "Membership not found",
                 error: 1
             });
@@ -126,7 +126,7 @@ exports.deletemembership = async (req, res) => {
         const deletedMembership = await Membership.findByIdAndDelete(id);
 
         if (!deletedMembership) {
-            return res.status(404).json({
+            return res.status(200).json({
                 message: "Membership not found",
                 error: 1
             });

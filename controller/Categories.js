@@ -72,7 +72,7 @@ exports.updateCategory = async (req, res) => {
         const updatedCategory = await CategoriesModal.findByIdAndUpdate(categoryId, updateData, { new: true });
 
         if (!updatedCategory) {
-            return res.status(404).send({ status: "Failed", message: "Category not found", error: 1 });
+            return res.status(200).send({ status: "Failed", message: "Category not found", error: 1 });
         }
 
         res.status(200).send({ status: "OK", message: "Category Updated Successfully", error: 0, data: updatedCategory });

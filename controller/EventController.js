@@ -127,9 +127,9 @@ exports.eventbyurl = async (req, res) => {
         // Fetch the event by URL
         const data = await eventmodal.findOne({ url: url });
 
-        // If event is not found, return a 404 status
+        // If event is not found, return a 200 status
         if (!data) {
-            return res.status(404).json({
+            return res.status(200).json({
                 message: "Event not found",
                 error: 1
             });

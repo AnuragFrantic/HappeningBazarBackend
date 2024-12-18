@@ -25,7 +25,7 @@ exports.getLeadById = async (req, res) => {
     try {
         const lead = await Lead.findById(req.params.id).populate("category");
         if (!lead) {
-            return res.status(404).json({ success: false, message: "Lead not found" });
+            return res.status(200).json({ success: false, message: "Lead not found" });
         }
         res.status(200).json({ success: true, data: lead });
     } catch (error) {
@@ -41,7 +41,7 @@ exports.updateLead = async (req, res) => {
             runValidators: true,
         }).populate("category");
         if (!lead) {
-            return res.status(404).json({ success: false, message: "Lead not found" });
+            return res.status(200).json({ success: false, message: "Lead not found" });
         }
         res.status(200).json({ success: true, data: lead });
     } catch (error) {
@@ -54,7 +54,7 @@ exports.deleteLead = async (req, res) => {
     try {
         const lead = await Lead.findByIdAndDelete(req.params.id);
         if (!lead) {
-            return res.status(404).json({ success: false, message: "Lead not found" });
+            return res.status(200).json({ success: false, message: "Lead not found" });
         }
         res.status(200).json({ success: true, message: "Lead deleted successfully" });
     } catch (error) {

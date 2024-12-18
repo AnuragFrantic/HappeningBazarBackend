@@ -143,7 +143,7 @@ exports.updateReview = async (req, res) => {
         );
 
         if (!updatedReview) {
-            return res.status(404).json({
+            return res.status(200).json({
                 status: "Failed",
                 message: "Review not found or you do not have permission to update it",
                 error: 1,
@@ -174,7 +174,7 @@ exports.deleteReview = async (req, res) => {
         });
 
         if (!deletedReview) {
-            return res.status(404).json({
+            return res.status(200).json({
                 status: "Failed",
                 message: "Review not found or you do not have permission to delete it",
                 error: 1,

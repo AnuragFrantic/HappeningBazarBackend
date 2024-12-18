@@ -140,7 +140,7 @@ exports.getstores_by_Subcategory_url = async (req, res) => {
 
         // If no data found, return an error
         if (!data || data.length === 0) {
-            return res.status(404).json({ error: 1, message: "No stores found for the given subcategory URL" });
+            return res.status(200).json({ error: 1, message: "No stores found for the given subcategory URL" });
         }
 
         // Return the matched stores with all store fields and populated subcategory, category, and created_by details
