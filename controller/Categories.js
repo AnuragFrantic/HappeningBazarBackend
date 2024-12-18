@@ -5,7 +5,7 @@ const { findByIdAndDelete } = require("../model/SubCategoryModal")
 
 exports.storeCat = async (req, res) => {
     try {
-        const create = new CategoriesModal(req.body)
+        const data = new CategoriesModal(req.body)
 
         if (req.files) {
             if (req.files.image) {
@@ -18,7 +18,7 @@ exports.storeCat = async (req, res) => {
                 data.banner = req.files.banner[0].path;
             }
         }
-        await create.save()
+        await data.save()
         res.status(200).send({ "status": "OK", "message": "Data Created Successfully", error: 0 })
     } catch (e) {
         res.status(500).send({ "status": "Failed", "message": e.message })
