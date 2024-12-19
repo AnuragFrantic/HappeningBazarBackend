@@ -26,8 +26,8 @@ exports.LoginController = async (req, res) => {
         }
 
         // User authenticated, generate JWT token
-        const payload = { _id: user._id, type: user.type, status: user.status }; // Minimize payload for security
-        const token = jwt.sign(payload, process.env.secretKey, { expiresIn: "24h" });
+        const payload = { _id: user._id, type: user.type, status: user.status };
+        const token = jwt.sign(payload, process.env.secretKey, { expiresIn: "999h" });
 
         res.status(200).json({
             error: 0,
