@@ -41,9 +41,8 @@ exports.createEvent = async (req, res) => {
 
 exports.getallevent = async (req, res) => {
     try {
-
-        // Get state and city from query parameters
-        const { state, city } = req.query;
+        // Get state, city, and title from query parameters
+        const { state, city, title } = req.query;
 
         // Build a filter object
         let filter = {};
@@ -51,8 +50,14 @@ exports.getallevent = async (req, res) => {
         if (state) {
             filter.state = state;
         }
+
         if (city) {
             filter.city = city;
+        }
+
+        if (title) {
+            // Use regex for case-insensitive partial matching for title
+            filter.title = { $regex: title, $options: 'i' };
         }
 
         // Fetch events based on the filter
@@ -64,6 +69,7 @@ exports.getallevent = async (req, res) => {
         res.status(500).json({ status: "ERROR", message: "Event not found", error: 1 });
     }
 };
+
 
 
 

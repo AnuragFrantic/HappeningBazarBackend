@@ -54,9 +54,106 @@ exports.getAllStores = async (req, res) => {
 
 
 
+// exports.getstores_by_Subcategory_url = async (req, res) => {
+//     try {
+//         const url = req.params.url;
+
+//         const data = await Store.aggregate([
+//             // Lookup subcategory details
+//             {
+//                 $lookup: {
+//                     from: 'subcategories',
+//                     localField: 'subcategory',
+//                     foreignField: '_id',
+//                     as: 'subcategoryDetails'
+//                 }
+//             },
+//             {
+//                 $unwind: {
+//                     path: '$subcategoryDetails',
+//                     preserveNullAndEmptyArrays: true
+//                 }
+//             },
+//             // Match stores by subcategory URL
+//             {
+//                 $match: { 'subcategoryDetails.url': url }
+//             },
+//             // Lookup category details
+//             {
+//                 $lookup: {
+//                     from: 'categories',
+//                     localField: 'category',
+//                     foreignField: '_id',
+//                     as: 'categoryDetails'
+//                 }
+//             },
+//             {
+//                 $unwind: {
+//                     path: '$categoryDetails',
+//                     preserveNullAndEmptyArrays: true
+//                 }
+//             },
+//             // Lookup created_by (assuming created_by refers to a users collection)
+//             {
+//                 $lookup: {
+//                     from: 'registers', // Replace 'registers' with the actual collection name for users
+//                     localField: 'created_by',
+//                     foreignField: '_id',
+//                     as: 'createdByDetails'
+//                 }
+//             },
+//             {
+//                 $unwind: {
+//                     path: '$createdByDetails',
+//                     preserveNullAndEmptyArrays: true
+//                 }
+//             },
+//             // Match only stores where created_by.status is 'accepted'
+//             {
+//                 $match: { 'createdByDetails.status': 'accepted' }
+//             },
+//             // Select relevant fields
+//             {
+//                 $project: {
+//                     _id: 1,
+//                     title: 1,
+//                     desc: 1,
+//                     image: 1,
+//                     category: '$categoryDetails',
+//                     subcategory: 1,
+//                     description: 1,
+//                     product: 1,
+//                     url: 1,
+//                     created_by: {
+//                         _id: '$createdByDetails._id',
+//                         name: '$createdByDetails.name',
+//                         status: '$createdByDetails.status'
+//                     }, // Include only specific fields for created_by
+//                     createdAt: 1,
+//                     updatedAt: 1,
+//                     'subcategoryDetails._id': 1,
+//                     'subcategoryDetails.type': 1,
+//                     'subcategoryDetails.url': 1
+//                 }
+//             }
+//         ]);
+
+//         // If no data found, return an error
+//         if (!data || data.length === 0) {
+//             return res.status(200).json({ error: 1, message: "No stores found for the given subcategory URL" });
+//         }
+
+//         // Return the matched stores with all store fields and populated subcategory, category, and created_by details
+//         res.status(200).json({ error: 0, data });
+//     } catch (err) {
+//         res.status(500).json({ error: 1, message: err.message });
+//     }
+// };
+
 exports.getstores_by_Subcategory_url = async (req, res) => {
     try {
         const url = req.params.url;
+        const { title } = req.query;
 
         const data = await Store.aggregate([
             // Lookup subcategory details
@@ -112,6 +209,14 @@ exports.getstores_by_Subcategory_url = async (req, res) => {
             {
                 $match: { 'createdByDetails.status': 'accepted' }
             },
+            // Filter by title if provided
+            ...(title
+                ? [
+                    {
+                        $match: { title: { $regex: title, $options: 'i' } } // Case-insensitive partial match for title
+                    }
+                ]
+                : []),
             // Select relevant fields
             {
                 $project: {
@@ -140,7 +245,7 @@ exports.getstores_by_Subcategory_url = async (req, res) => {
 
         // If no data found, return an error
         if (!data || data.length === 0) {
-            return res.status(200).json({ error: 1, message: "No stores found for the given subcategory URL" });
+            return res.status(200).json({ error: 1, message: "No stores found for the given subcategory URL or title" });
         }
 
         // Return the matched stores with all store fields and populated subcategory, category, and created_by details
@@ -149,6 +254,7 @@ exports.getstores_by_Subcategory_url = async (req, res) => {
         res.status(500).json({ error: 1, message: err.message });
     }
 };
+
 
 
 

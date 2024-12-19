@@ -52,9 +52,35 @@ exports.getbycategory = async (req, res) => {
     }
 };
 
+// exports.getbycategoryurl = async (req, res) => {
+//     const url = req.params.url;
+
+
+//     try {
+//         const data = await SubCategoryModal.find()
+//             .populate({
+//                 path: 'category',
+//                 match: { url: url }
+//             });
+
+//         // Filter out documents where `category` is null (no match found)
+//         const filteredData = data.filter(subcategory => subcategory.category);
+
+//         if (filteredData.length === 0) {
+//             return res.status(200).json({ status: "Failed", message: "Category not found", error: 1 });
+//         }
+
+//         res.status(200).json({ status: "Success", data: filteredData, error: 0 });
+//     } catch (err) {
+//         res.status(500).json({ status: "Failed", message: err.message, error: 1 });
+//     }
+// };
+
+
+
 exports.getbycategoryurl = async (req, res) => {
     const url = req.params.url;
-
+    const { type } = req.query; // Extract 'type' from query parameters
 
     try {
         const data = await SubCategoryModal.find()
@@ -64,10 +90,16 @@ exports.getbycategoryurl = async (req, res) => {
             });
 
         // Filter out documents where `category` is null (no match found)
-        const filteredData = data.filter(subcategory => subcategory.category);
+        let filteredData = data.filter(subcategory => subcategory.category);
+
+        // Further filter by 'type' with partial matching if provided
+        if (type) {
+            const regex = new RegExp(type, 'i'); // Create a case-insensitive regex
+            filteredData = filteredData.filter(subcategory => regex.test(subcategory.type));
+        }
 
         if (filteredData.length === 0) {
-            return res.status(200).json({ status: "Failed", message: "Category not found", error: 1 });
+            return res.status(200).json({ status: "Failed", message: "Category or type not found", error: 1 });
         }
 
         res.status(200).json({ status: "Success", data: filteredData, error: 0 });

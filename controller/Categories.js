@@ -26,14 +26,38 @@ exports.storeCat = async (req, res) => {
 }
 
 
+// exports.getAllCategory = async (req, res) => {
+//     try {
+//         const data = await CategoriesModal.find()
+//         res.status(200).send({ "status": "OK", data: data, error: 0 })
+//     } catch (e) {
+//         res.status(500).send({ "status": "Failed", "message": e.message, error: 1 })
+//     }
+// }
+
 exports.getAllCategory = async (req, res) => {
     try {
-        const data = await CategoriesModal.find()
-        res.status(200).send({ "status": "OK", data: data, error: 0 })
+        // Extract query parameter
+        const { name } = req.query;
+
+        // Build the filter object
+        const filter = {};
+        if (name) {
+            // Use regex for case-insensitive partial matching
+            filter.name = { $regex: name, $options: 'i' };
+        }
+
+        // Fetch filtered data from the database
+        const data = await CategoriesModal.find(filter);
+
+        res.status(200).send({ status: "OK", data, error: 0 });
     } catch (e) {
-        res.status(500).send({ "status": "Failed", "message": e.message, error: 1 })
+        res.status(500).send({ status: "Failed", message: e.message, error: 1 });
     }
-}
+};
+
+
+
 
 
 exports.getCategorybyurl = async (req, res) => {
