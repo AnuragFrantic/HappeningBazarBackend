@@ -53,10 +53,12 @@ exports.getAllStores = async (req, res) => {
 
 
 
+// it is before lat long
 
 // exports.getstores_by_Subcategory_url = async (req, res) => {
 //     try {
 //         const url = req.params.url;
+//         const { title } = req.query;
 
 //         const data = await Store.aggregate([
 //             // Lookup subcategory details
@@ -112,6 +114,14 @@ exports.getAllStores = async (req, res) => {
 //             {
 //                 $match: { 'createdByDetails.status': 'accepted' }
 //             },
+//             // Filter by title if provided
+//             ...(title
+//                 ? [
+//                     {
+//                         $match: { title: { $regex: title, $options: 'i' } } // Case-insensitive partial match for title
+//                     }
+//                 ]
+//                 : []),
 //             // Select relevant fields
 //             {
 //                 $project: {
@@ -127,7 +137,10 @@ exports.getAllStores = async (req, res) => {
 //                     created_by: {
 //                         _id: '$createdByDetails._id',
 //                         name: '$createdByDetails.name',
-//                         status: '$createdByDetails.status'
+//                         status: '$createdByDetails.status',
+//                         lat: '$createdByDetails.lat',
+//                         long: '$createdByDetails.long'
+
 //                     }, // Include only specific fields for created_by
 //                     createdAt: 1,
 //                     updatedAt: 1,
@@ -140,7 +153,7 @@ exports.getAllStores = async (req, res) => {
 
 //         // If no data found, return an error
 //         if (!data || data.length === 0) {
-//             return res.status(200).json({ error: 1, message: "No stores found for the given subcategory URL" });
+//             return res.status(200).json({ error: 1, message: "No stores found for the given subcategory URL or title" });
 //         }
 
 //         // Return the matched stores with all store fields and populated subcategory, category, and created_by details
@@ -150,12 +163,21 @@ exports.getAllStores = async (req, res) => {
 //     }
 // };
 
+
+//  after lat long
+
+
 exports.getstores_by_Subcategory_url = async (req, res) => {
     try {
         const url = req.params.url;
-        const { title } = req.query;
+        const { title, lat, long } = req.query;
+        console.log(lat, long)
 
-        const data = await Store.aggregate([
+        if (lat && long && (isNaN(lat) || isNaN(long))) {
+            return res.status(400).json({ error: 1, message: "Invalid latitude or longitude" });
+        }
+
+        const queryPipeline = [
             // Lookup subcategory details
             {
                 $lookup: {
@@ -217,6 +239,47 @@ exports.getstores_by_Subcategory_url = async (req, res) => {
                     }
                 ]
                 : []),
+            // Add a computed field for geospatial distance if lat and long are provided
+            ...(lat && long
+                ? [
+                    {
+                        $addFields: {
+                            distance: {
+                                $sqrt: {
+                                    $add: [
+                                        {
+                                            $pow: [
+                                                {
+                                                    $subtract: [
+                                                        { $toDouble: lat }, // Convert query latitude to number
+                                                        { $toDouble: '$createdByDetails.lat' } // Convert database latitude to number
+                                                    ]
+                                                },
+                                                2
+                                            ]
+                                        },
+                                        {
+                                            $pow: [
+                                                {
+                                                    $subtract: [
+                                                        { $toDouble: long }, // Convert query longitude to number
+                                                        { $toDouble: '$createdByDetails.long' } // Convert database longitude to number
+                                                    ]
+                                                },
+                                                2
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    // Sort by distance in ascending order
+                    {
+                        $sort: { distance: 1 }
+                    }
+                ]
+                : []),
             // Select relevant fields
             {
                 $project: {
@@ -232,16 +295,21 @@ exports.getstores_by_Subcategory_url = async (req, res) => {
                     created_by: {
                         _id: '$createdByDetails._id',
                         name: '$createdByDetails.name',
-                        status: '$createdByDetails.status'
+                        status: '$createdByDetails.status',
+                        lat: '$createdByDetails.lat',
+                        long: '$createdByDetails.long'
                     }, // Include only specific fields for created_by
                     createdAt: 1,
                     updatedAt: 1,
                     'subcategoryDetails._id': 1,
                     'subcategoryDetails.type': 1,
-                    'subcategoryDetails.url': 1
+                    'subcategoryDetails.url': 1,
+                    ...(lat && long ? { distance: 1 } : {}) // Include distance if calculated
                 }
             }
-        ]);
+        ];
+
+        const data = await Store.aggregate(queryPipeline);
 
         // If no data found, return an error
         if (!data || data.length === 0) {
@@ -254,6 +322,9 @@ exports.getstores_by_Subcategory_url = async (req, res) => {
         res.status(500).json({ error: 1, message: err.message });
     }
 };
+
+
+
 
 
 

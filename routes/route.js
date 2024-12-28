@@ -75,7 +75,7 @@ router.delete('/subcategoryimage/:imageId', deleteImagesubsubCategory);
 // Auth
 router.post("/register", upload.single("image"), PostRegister);
 router.get("/alluser", verifyToken, adminAuth, getallRegister);
-router.put("/updateuser", verifyToken, adminAuth, upload.single("image"), putRegister);
+router.put("/updateuser", verifyToken, upload.single("image"), putRegister);
 router.delete("/register", deleteRegister);
 
 router.get("/user", getbyUser);

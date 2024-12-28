@@ -29,7 +29,7 @@ exports.getOpenHourById = async (req, res) => {
 
 exports.getOpenHours = async (req, res) => {
     try {
-        const { storeUrl } = req.query; // Capture store URL from query params
+        const { storeUrl } = req.query;
         let query = {};
 
         // Find OpenHours and populate related store details

@@ -18,7 +18,7 @@ const OfferSchema = new mongoose.Schema({
     offer_validity: { type: String },
     offer_redeem: { type: String },
     offer_terms: { type: String },
-    created_by: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    created_by: { type: mongoose.Schema.Types.ObjectId, ref: "Register", required: true },
     store: { type: mongoose.Schema.Types.ObjectId, ref: "Store" },
     category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
     discount_amount: { type: Number },
