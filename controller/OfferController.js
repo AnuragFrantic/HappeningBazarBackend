@@ -18,86 +18,18 @@ exports.createOffer = async (req, res) => {
 
 // Get all offers
 
-exports.getfilteroffer = async (req, res) => {
-    try {
-        const { state, city, alluser, category } = req.query;
-
-        // Construct the filter based on the value of alluser
-        const filter = {
-            expiry_date: { $gte: new Date() },
-        };
-
-        // Add the conditions for `alluser` based on its value
-        if (alluser === 'alluser') {
-            // If `alluser` is 'alluser', show all data regardless of user type
-            filter.alluser = 'alluser';
-        } else if (alluser === 'utsav') {
-            // If `alluser` is 'utsav', show data relevant to 'utsav' users
-            filter.alluser = 'utsav';
-        } else if (alluser === 'all') {
-            // If `alluser` is 'all', show all data
-            // No need to modify filter for this case
-        }
-
-        // Add additional filters for state and city if provided
-        if (state) {
-            filter.state = state;
-        }
-        if (city) {
-            filter.city = city;
-        }
-
-        if (category) {
-            filter.category = category;
-        }
-
-        // Find offers based on the constructed filter
-        const data = await Offer.find(filter)
-            .populate([
-                {
-                    path: 'generated_codes.user',
-                    select: 'name email',
-                },
-                {
-                    path: 'category',
-                    select: '_id name position url'
-                },
-                {
-                    path: 'created_by',
-                    select: '_id name email lat long'
-                }
-
-            ]);
-
-        res.status(200).json({
-            status: "OK",
-            message: "Offers fetched successfully",
-            error: 0,
-            data
-        });
-    } catch (error) {
-        console.error("Error fetching offers:", error);
-        res.status(500).json({
-            status: "FAILED",
-            message: "Error fetching offers",
-            error: 1
-        });
-    }
-};
-
-
 // exports.getfilteroffer = async (req, res) => {
 //     try {
-//         const { state, city, alluser, category, lat, long } = req.query;
+//         const { state, city, alluser, category } = req.query;
 
-
+//         // Construct the filter based on the value of alluser
 //         const filter = {
 //             expiry_date: { $gte: new Date() },
 //         };
 
 //         // Add the conditions for `alluser` based on its value
 //         if (alluser === 'alluser') {
-
+//             // If `alluser` is 'alluser', show all data regardless of user type
 //             filter.alluser = 'alluser';
 //         } else if (alluser === 'utsav') {
 //             // If `alluser` is 'utsav', show data relevant to 'utsav' users
@@ -106,126 +38,215 @@ exports.getfilteroffer = async (req, res) => {
 //             // If `alluser` is 'all', show all data
 //             // No need to modify filter for this case
 //         }
+
+//         // Add additional filters for state and city if provided
 //         if (state) {
 //             filter.state = state;
 //         }
 //         if (city) {
 //             filter.city = city;
 //         }
+
 //         if (category) {
 //             filter.category = category;
 //         }
 
-//         const queryPipeline = [
-//             // Match offers based on the filter
-//             { $match: filter },
-
-//             // Add a computed field for geospatial distance if lat and long are provided
-//             ...(lat && long
-//                 ? [
-//                     {
-//                         $addFields: {
-//                             distance: {
-//                                 $sqrt: {
-//                                     $add: [
-//                                         { $pow: [{ $subtract: [parseFloat(lat), '$created_by.lat'] }, 2] },
-//                                         { $pow: [{ $subtract: [parseFloat(long), '$created_by.long'] }, 2] }
-//                                     ]
-//                                 }
-//                             }
-//                         }
-//                     },
-//                     // Sort by distance in ascending order
-//                     {
-//                         $sort: { distance: 1 }
-//                     }
-//                 ]
-//                 : []),
-
-//             // Populate the necessary fields
-//             {
-//                 $lookup: {
-//                     from: 'categories',
-//                     localField: 'category',
-//                     foreignField: '_id',
-//                     as: 'categoryDetails',
+//         // Find offers based on the constructed filter
+//         const data = await Offer.find(filter)
+//             .populate([
+//                 {
+//                     path: 'generated_codes.user',
+//                     select: 'name email',
 //                 },
-//             },
-//             {
-//                 $unwind: {
-//                     path: '$categoryDetails',
-//                     preserveNullAndEmptyArrays: true,
+//                 {
+//                     path: 'category',
+//                     select: '_id name position url'
 //                 },
-//             },
-//             {
-//                 $lookup: {
-//                     from: 'registers',
-//                     localField: 'created_by',
-//                     foreignField: '_id',
-//                     as: 'createdByDetails',
-//                 },
-//             },
-//             {
-//                 $unwind: {
-//                     path: '$createdByDetails',
-//                     preserveNullAndEmptyArrays: true,
-//                 },
-//             },
-//             {
-//                 $project: {
-//                     _id: 1,
-//                     title: 1,
-//                     description: 1,
-//                     discount_amount: 1,
-//                     discount_percentage: 1,  // Added
-//                     minimum_purchase: 1,  // Added
-//                     maximum_discount: 1,  // Added
-//                     usage_limit: 1,  // Added
-//                     start_date: 1,  // Added
-//                     image: 1,
-//                     generated_codes: 1,
-//                     category: '$categoryDetails',
-//                     url: 1,  // Added category URL
-//                     created_by: {
-//                         _id: '$createdByDetails._id',
-//                         name: '$createdByDetails.name',
-//                         email: '$createdByDetails.email',
-//                         lat: '$createdByDetails.lat',
-//                         long: '$createdByDetails.long',
-//                     },
-//                     createdAt: 1,
-//                     updatedAt: 1,
-//                     expiry_date: 1,
-//                     state: 1,  // Added
-//                     city: 1,  // Added
-//                     sector: 1,  // Added
-//                     is_active: 1,  // Added
-//                     is_deleted: 1,  // Added
-//                     ...(lat && long ? { distance: 1 } : {}),
-//                 },
+//                 {
+//                     path: 'created_by',
+//                     select: '_id name email lat long'
+//                 }
 
-//             },
-//         ];
+//             ]);
 
-//         // Execute the aggregation pipeline
-//         const data = await Offer.aggregate(queryPipeline);
-
-//         // Return the results
 //         res.status(200).json({
 //             status: "OK",
 //             message: "Offers fetched successfully",
 //             error: 0,
-//             data,
+//             data
 //         });
 //     } catch (error) {
 //         console.error("Error fetching offers:", error);
 //         res.status(500).json({
 //             status: "FAILED",
 //             message: "Error fetching offers",
-//             error: 1,
+//             error: 1
 //         });
 //     }
 // };
+
+
+exports.getfilteroffer = async (req, res) => {
+    try {
+        const { state, city, alluser, category, lat, long } = req.query;
+
+        console.log(lat , long)
+        const filter = {
+            expiry_date: { $gte: new Date() },
+        };
+
+        // Add the conditions for `alluser` based on its value
+        if (alluser === 'alluser') {
+
+            filter.alluser = 'alluser';
+        } else if (alluser === 'utsav') {
+            // If `alluser` is 'utsav', show data relevant to 'utsav' users
+            filter.alluser = 'utsav';
+        } else if (alluser === 'all') {
+            // If `alluser` is 'all', show all data
+            // No need to modify filter for this case
+        }
+        if (state) {
+            filter.state = state;
+        }
+        if (city) {
+            filter.city = city;
+        }
+        if (category) {
+            filter.category = category;
+        }
+
+        const queryPipeline = [
+            // Match offers based on the filter
+            { $match: filter },
+
+           
+           
+
+            // Populate the necessary fields
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'category',
+                    foreignField: '_id',
+                    as: 'categoryDetails',
+                },
+            },
+            {
+                $unwind: {
+                    path: '$categoryDetails',
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $lookup: {
+                    from: 'registers',
+                    localField: 'created_by',
+                    foreignField: '_id',
+                    as: 'createdByDetails',
+                },
+            },
+            {
+                $unwind: {
+                    path: '$createdByDetails',
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            ...(lat && long
+                ? [
+                    {
+                        $addFields: {
+                            distance: {
+                                $sqrt: {
+                                    $add: [
+                                        {
+                                            $pow: [
+                                                {
+                                                    $subtract: [
+                                                        { $toDouble: lat }, // Convert query latitude to number
+                                                        { $toDouble: '$createdByDetails.lat' } // Convert database latitude to number
+                                                    ]
+                                                },
+                                                2
+                                            ]
+                                        },
+                                        {
+                                            $pow: [
+                                                {
+                                                    $subtract: [
+                                                        { $toDouble: long }, // Convert query longitude to number
+                                                        { $toDouble: '$createdByDetails.long' } // Convert database longitude to number
+                                                    ]
+                                                },
+                                                2
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    // Sort by distance in ascending order
+                    {
+                        $sort: { distance: 1 }
+                    }
+                ]
+                : []),
+            {
+                $project: {
+                    _id: 1,
+                    title: 1,
+                    description: 1,
+                    discount_amount: 1,
+                    discount_percentage: 1,  // Added
+                    minimum_purchase: 1,  // Added
+                    maximum_discount: 1,  // Added
+                    usage_limit: 1,  // Added
+                    start_date: 1,  // Added
+                    image: 1,
+                    generated_codes: 1,
+                    category: '$categoryDetails',
+                    url: 1,  // Added category URL
+                    created_by: {
+                        _id: '$createdByDetails._id',
+                        name: '$createdByDetails.name',
+                        email: '$createdByDetails.email',
+                        lat: '$createdByDetails.lat',
+                        long: '$createdByDetails.long',
+                    },
+                    createdAt: 1,
+                    updatedAt: 1,
+                    expiry_date: 1,
+                    state: 1,  // Added
+                    city: 1,  // Added
+                    sector: 1,  // Added
+                    is_active: 1,  // Added
+                    is_deleted: 1,  // Added
+                    ...(lat && long ? { distance: 1 } : {}),
+                },
+
+            },
+        ];
+
+        // Execute the aggregation pipeline
+        const data = await Offer.aggregate(queryPipeline);
+
+        // Return the results
+        res.status(200).json({
+            status: "OK",
+            message: "Offers fetched successfully",
+            error: 0,
+            data,
+        });
+    } catch (error) {
+        console.error("Error fetching offers:", error);
+        res.status(500).json({
+            status: "FAILED",
+            message: "Error fetching offers",
+            error: 1,
+        });
+    }
+};
 
 
 
@@ -234,10 +255,15 @@ exports.getfilteroffer = async (req, res) => {
 
 exports.getAllOffers = async (req, res) => {
     try {
-        const offer = await Offer.find();
+        const offers = await Offer.find()
+            .populate({
+                path: 'created_by',
+                select: '_id name email lat long'
+            });
+
         return res.status(200).json({
-            message: "Offer Fetch successfully.",
-            data: offer,
+            message: "Offers fetched successfully.",
+            data: offers,
             error: 0
         });
     } catch (error) {
@@ -248,6 +274,7 @@ exports.getAllOffers = async (req, res) => {
         });
     }
 };
+
 
 
 
