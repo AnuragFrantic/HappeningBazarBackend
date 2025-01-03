@@ -90,7 +90,7 @@ exports.getfilteroffer = async (req, res) => {
     try {
         const { state, city, alluser, category, lat, long } = req.query;
 
-        console.log(lat , long)
+        console.log(lat, long)
         const filter = {
             expiry_date: { $gte: new Date() },
         };
@@ -120,8 +120,8 @@ exports.getfilteroffer = async (req, res) => {
             // Match offers based on the filter
             { $match: filter },
 
-           
-           
+
+
 
             // Populate the necessary fields
             {
@@ -196,6 +196,16 @@ exports.getfilteroffer = async (req, res) => {
                 $project: {
                     _id: 1,
                     title: 1,
+                    name: 1,
+                    deleted_price: 1,
+                    real_price: 1,
+                    alluser: 1,
+                    type: 1,
+                    offer_detail: 1,
+                    offer_validity: 1,
+                    offer_redeem: 1,
+                    offer_terms: 1,
+
                     description: 1,
                     discount_amount: 1,
                     discount_percentage: 1,  // Added
@@ -204,6 +214,7 @@ exports.getfilteroffer = async (req, res) => {
                     usage_limit: 1,  // Added
                     start_date: 1,  // Added
                     image: 1,
+                    store: 1,
                     generated_codes: 1,
                     category: '$categoryDetails',
                     url: 1,  // Added category URL
